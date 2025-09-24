@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { environment } from "@/config/environment";
 import { theme } from "@/styles/theme";
 import { ThemedSelect } from "@/components/UI/ThemedSelect";
 import { ThemedInput } from "@/components/UI/ThemedInput";
@@ -115,7 +116,7 @@ const UserIntercityRide = () => {
         traveller,
       };
 
-      await axios.post("http://localhost:5000/send-intercity-email", payload);
+      await axios.post(`${environment.baseUrl}/send-intercity-email`, payload);
       setMessage("✅ Booking confirmed! Details sent via email.");
     } catch (err) {
       console.error(err);

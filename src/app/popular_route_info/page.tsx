@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { environment } from "@/config/environment";
 import { BsCarFront, BsClock } from "react-icons/bs";
 import { FaSearch, FaArrowRight, FaTag } from "react-icons/fa";
 import { theme } from "@/styles/theme";
@@ -37,7 +38,7 @@ const PopularRouteInfo: React.FC = () => {
     try {
       const response = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+          process.env.NEXT_PUBLIC_API_URL || environment.baseUrl
         }/routes?status=active&limit=50`
       );
       const data = await response.json();

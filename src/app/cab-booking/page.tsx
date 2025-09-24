@@ -3,6 +3,7 @@
 "use client";
 import React, { useState, useEffect, Suspense, use } from "react";
 import { useSearchParams } from "next/navigation";
+import { environment } from "@/config/environment";
 import {
   sendAirportEmail,
   sendLocalEmail,
@@ -125,7 +126,7 @@ const CabBookingContent = () => {
       };
 
       const { data: order } = await axios.post(
-        "http://localhost:5000/api/create-order",
+        `${environment.baseUrl}/api/create-order`,
         createOrderPayload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -170,7 +171,7 @@ const CabBookingContent = () => {
 
           try {
             const { data } = await axios.post(
-              "http://localhost:5000/api/verify-payment",
+              `${environment.baseUrl}/api/verify-payment`,
               payload,
               { headers: { "Content-Type": "application/json" } }
             );

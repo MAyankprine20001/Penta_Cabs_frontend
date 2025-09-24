@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { environment } from "@/config/environment";
 import { BsCarFront, BsClock } from "react-icons/bs";
 import {
   FaArrowLeft,
@@ -44,7 +45,7 @@ export default function RouteDetailPage({ params }: RoutePageProps) {
   const fetchRoute = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/routes/${
+        `${process.env.NEXT_PUBLIC_API_URL || environment.baseUrl}/routes/${
           params.id
         }`
       );

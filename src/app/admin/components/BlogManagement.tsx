@@ -7,6 +7,7 @@ import React, {
   useImperativeHandle,
   useCallback,
 } from "react";
+import { environment } from "@/config/environment";
 
 interface BlogPost {
   id: string;
@@ -49,7 +50,7 @@ const BlogManagement = forwardRef<
 
         const response = await fetch(
           `${
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+            process.env.NEXT_PUBLIC_API_URL || environment.baseUrl
           }/blogs?status=${statusFilter}&search=${searchTerm}&page=${pageToUse}&limit=${limitToUse}`
         );
         const data = await response.json();
@@ -121,7 +122,7 @@ const BlogManagement = forwardRef<
       try {
         const response = await fetch(
           `${
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+            process.env.NEXT_PUBLIC_API_URL || environment.baseUrl
           }/blogs/${blogId}`,
           {
             method: "DELETE",
@@ -145,7 +146,7 @@ const BlogManagement = forwardRef<
       const newStatus = currentStatus === "published" ? "draft" : "published";
       const response = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+          process.env.NEXT_PUBLIC_API_URL || environment.baseUrl
         }/blogs/${blogId}/status`,
         {
           method: "PATCH",

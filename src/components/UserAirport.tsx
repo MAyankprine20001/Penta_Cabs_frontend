@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { environment } from "@/config/environment";
 import { theme } from "@/styles/theme";
 import { ThemedSelect } from "@/components/UI/ThemedSelect";
 import { ThemedInput } from "@/components/UI/ThemedInput";
@@ -38,7 +39,7 @@ const UserAirport = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/available-airports")
+      .get(`${environment.baseUrl}/api/available-airports`)
       .then((res) => setAirportsData(res.data.airports))
       .catch((err) => console.error(err));
   }, []);
@@ -54,7 +55,7 @@ const UserAirport = () => {
     setCabOptions([]);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/search-cabs-forairport",
+        `${environment.baseUrl}/api/search-cabs-forairport`,
         formData
       );
 
@@ -116,7 +117,7 @@ const UserAirport = () => {
 
   const handleBooking = async () => {
     try {
-      await axios.post("http://localhost:5000/api/send-airport-email", {
+      await axios.post(`${environment.baseUrl}/api/send-airport-email`, {
         email: traveller.email,
         route: `${
           formData.serviceType === "pickup" ? "Pickup from" : "Drop to"

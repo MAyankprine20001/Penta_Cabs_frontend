@@ -7,6 +7,7 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { environment } from "@/config/environment";
 
 interface BlogPost {
   id?: string;
@@ -376,10 +377,10 @@ const BlogForm = forwardRef<
 
     try {
       const url = blogData.id
-        ? `${
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-          }/blogs/${blogData.id}`
-        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/blogs`;
+        ? `${process.env.NEXT_PUBLIC_API_URL || environment.baseUrl}/blogs/${
+            blogData.id
+          }`
+        : `${process.env.NEXT_PUBLIC_API_URL || environment.baseUrl}/blogs`;
 
       const method = blogData.id ? "PUT" : "POST";
 

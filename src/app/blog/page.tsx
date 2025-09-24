@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { environment } from "@/config/environment";
 import {
   FaCalendarAlt,
   FaUser,
@@ -36,7 +37,7 @@ export default function BlogPage() {
     try {
       const response = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+          process.env.NEXT_PUBLIC_API_URL || environment.baseUrl
         }/blogs?status=published&limit=20`
       );
       const data = await response.json();

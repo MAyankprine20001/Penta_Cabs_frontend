@@ -7,6 +7,7 @@ import React, {
   useImperativeHandle,
   useCallback,
 } from "react";
+import { environment } from "@/config/environment";
 import { theme } from "@/styles/theme";
 
 interface Route {
@@ -100,7 +101,7 @@ const RouteDashboard = forwardRef<
 
       const response = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+          process.env.NEXT_PUBLIC_API_URL || environment.baseUrl
         }/routes?${params.toString()}`
       );
       const data = await response.json();
@@ -205,7 +206,7 @@ const RouteDashboard = forwardRef<
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/routes/${
+        `${process.env.NEXT_PUBLIC_API_URL || environment.baseUrl}/routes/${
           selectedRoute.id
         }`,
         {

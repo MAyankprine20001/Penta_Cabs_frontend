@@ -7,6 +7,7 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { environment } from "@/config/environment";
 
 interface Route {
   id?: string;
@@ -419,12 +420,10 @@ const RouteForm = forwardRef<
 
     try {
       const url = routeData.id
-        ? `${
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-          }/routes/${routeData.id}`
-        : `${
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-          }/routes`;
+        ? `${process.env.NEXT_PUBLIC_API_URL || environment.baseUrl}/routes/${
+            routeData.id
+          }`
+        : `${process.env.NEXT_PUBLIC_API_URL || environment.baseUrl}/routes`;
 
       const method = routeData.id ? "PUT" : "POST";
 

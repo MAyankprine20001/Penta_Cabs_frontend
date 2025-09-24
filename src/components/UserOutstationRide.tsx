@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { environment } from "@/config/environment";
 import { theme } from "@/styles/theme";
 import { ThemedSelect } from "@/components/UI/ThemedSelect";
 import { ThemedInput } from "@/components/UI/ThemedInput";
@@ -140,7 +141,7 @@ const UserOutstationRide = () => {
         traveller,
       };
 
-      await fetch("http://localhost:5000/send-intercity-email", {
+      await fetch(`${environment.baseUrl}/send-intercity-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

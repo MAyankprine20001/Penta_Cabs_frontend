@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { environment } from "@/config/environment";
 import { theme } from "@/styles/theme";
 import { ThemedSelect } from "@/components/UI/ThemedSelect";
 import { ThemedInput } from "@/components/UI/ThemedInput";
@@ -44,7 +45,7 @@ const UserLocalRide = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/local-ride/search",
+        `${environment.baseUrl}/api/local-ride/search`,
         {
           city: formData.city.toLowerCase(),
           package: formData.package,
@@ -88,7 +89,7 @@ const UserLocalRide = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/available-cities")
+    fetch(`${environment.baseUrl}/api/available-cities`)
       .then((res) => res.json())
       .then((data) => setCities(data.cities))
       .catch((err) => console.error(err));
@@ -111,7 +112,7 @@ const UserLocalRide = () => {
     const routeSummary = `${formData.city} | ${formData.package} | ${formData.date} ${formData.time}`;
 
     try {
-      await axios.post("http://localhost:5000/send-local-email", {
+      await axios.post(`${environment.baseUrl}/send-local-email`, {
         email: travellerInfo.email,
         route: routeSummary,
         car: selectedCar,

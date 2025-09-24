@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { environment } from "@/config/environment";
 import {
   FaCalendarAlt,
   FaUser,
@@ -40,7 +41,7 @@ export default function BlogPostPage({ params }: BlogPageProps) {
   const fetchBlogPost = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/blogs/${
+        `${process.env.NEXT_PUBLIC_API_URL || environment.baseUrl}/blogs/${
           params.id
         }`
       );

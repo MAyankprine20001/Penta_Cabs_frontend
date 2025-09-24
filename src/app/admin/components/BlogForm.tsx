@@ -47,7 +47,7 @@ const BlogForm = forwardRef<
     openModal: (blog?: BlogPost) => {
       if (blog) {
         setBlogData(blog);
-        setContentHtml(blog.content);
+        setContentHtml(blog.content || "");
       } else {
         setBlogData({
           title: "",
@@ -60,15 +60,66 @@ const BlogForm = forwardRef<
         setContentHtml("");
       }
       setIsOpen(true);
+
+      // Ensure content is loaded after modal opens
+      setTimeout(() => {
+        if (blog && editorRef.current && blog.content) {
+          editorRef.current.innerHTML = blog.content;
+        }
+      }, 300);
     },
   }));
 
   // Effect to set editor content when contentHtml changes
   useEffect(() => {
     if (editorRef.current && contentHtml !== editorRef.current.innerHTML) {
-      editorRef.current.innerHTML = contentHtml;
+      // Add a small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        if (editorRef.current && contentHtml !== editorRef.current.innerHTML) {
+          editorRef.current.innerHTML = contentHtml;
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
     }
   }, [contentHtml]);
+
+  // Additional effect to ensure content is loaded when modal opens
+  useEffect(() => {
+    if (isOpen && editorRef.current && contentHtml) {
+      const timer = setTimeout(() => {
+        if (editorRef.current && contentHtml !== editorRef.current.innerHTML) {
+          editorRef.current.innerHTML = contentHtml;
+        }
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, contentHtml]);
+
+  // Effect to handle editor focus and content restoration
+  useEffect(() => {
+    if (isOpen && editorRef.current) {
+      const handleFocus = () => {
+        // Ensure content is properly set when editor gains focus
+        if (contentHtml && contentHtml !== editorRef.current?.innerHTML) {
+          setTimeout(() => {
+            if (
+              editorRef.current &&
+              contentHtml !== editorRef.current.innerHTML
+            ) {
+              editorRef.current.innerHTML = contentHtml;
+            }
+          }, 50);
+        }
+      };
+
+      editorRef.current.addEventListener("focus", handleFocus);
+      return () => {
+        editorRef.current?.removeEventListener("focus", handleFocus);
+      };
+    }
+  }, [isOpen, contentHtml]);
 
   const applyFormat = (format: string) => {
     if (!editorRef.current) return;

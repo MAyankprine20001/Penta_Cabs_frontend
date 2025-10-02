@@ -450,10 +450,19 @@ export default function UserDashboard() {
                         ).toLocaleString()}
                       </div>
                       {request.calculatedPayment && (
-                        <div className="text-xs text-gray-400">
-                          Total: ₹
-                          {request.calculatedPayment.totalFare.toLocaleString()}
-                        </div>
+                        <>
+                          <div className="text-xs text-green-400">
+                            Paid: ₹
+                            {(
+                              request.calculatedPayment.totalFare -
+                              request.calculatedPayment.remainingAmount
+                            ).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            Total: ₹
+                            {request.calculatedPayment.totalFare.toLocaleString()}
+                          </div>
+                        </>
                       )}
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">

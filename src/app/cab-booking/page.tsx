@@ -803,16 +803,6 @@ const CabBookingContent = () => {
         }}
       />
 
-      {/* Debug Info (Remove in production) */}
-      {process.env.NODE_ENV === "development" && bookingData && (
-        <div className="mt-8 p-4 bg-gray-800 rounded-lg">
-          <h3 className="text-white mb-2">Debug - Received Booking Data:</h3>
-          <pre className="text-green-400 text-xs overflow-auto">
-            {JSON.stringify(bookingData, null, 2)}
-          </pre>
-        </div>
-      )}
-
       {/* Custom CSS Animations */}
       <style jsx>{`
         @keyframes fade-in-up {

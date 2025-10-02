@@ -59,6 +59,19 @@ export interface BookingRequestData {
   time?: string;
   estimatedDistance?: string;
   paymentMethod: string;
+  status?: 'pending' | 'accepted' | 'declined' | 'driver_sent';
+  driverDetails?: {
+    name: string;
+    whatsappNumber: string;
+    vehicleNumber: string;
+  };
+  adminNotes?: string;
+  createdAt?: string;
+  calculatedPayment?: {
+    remainingAmount: number;
+    paymentStatus: string;
+    totalFare: number;
+  };
 }
 
 export interface DriverDetails {
@@ -157,18 +170,18 @@ export const sendDeclineEmail = async (email: string, route: string, reason?: st
 
 // Helper function to prepare email data based on booking type
 export const prepareEmailData = (
-  bookingData: any,
-  formData: any,
+  bookingData: Record<string, unknown>,
+  formData: Record<string, unknown>,
   serviceType: 'AIRPORT' | 'LOCAL' | 'OUTSTATION'
 ): EmailRequestData => {
   const baseData = {
-    email: formData.email,
+    email: formData.email as string,
     traveller: {
-      name: formData.name,
-      mobile: formData.mobile,
-      email: formData.email,
-      remark: formData.remark || '',
-      gst: formData.gstDetails ? (formData.gst || 'GST Details Required') : '',
+      name: formData.name as string,
+      mobile: formData.mobile as string,
+      email: formData.email as string,
+      remark: (formData.remark as string) || '',
+      gst: formData.gstDetails ? ((formData.gst as string) || 'GST Details Required') : '',
     },
   };
 
@@ -177,62 +190,62 @@ export const prepareEmailData = (
       // Determine route based on pickup/drop type
       let route = '';
       if (bookingData.pickupDropType === 'PICKUP') {
-        route = `Pickup from ${bookingData.airport}`;
+        route = `Pickup from ${bookingData.airport as string}`;
       } else {
-        route = `Drop to ${bookingData.airport}`;
+        route = `Drop to ${bookingData.airport as string}`;
       }
 
       return {
         ...baseData,
         route: route,
         cab: {
-          type: bookingData.selectedCabType || 'sedan',
+          type: (bookingData.selectedCabType as string) || 'sedan',
           available: true,
-          price: parseInt(bookingData.selectedCabPrice) || 0,
-          _id: bookingData.selectedCabId || '',
+          price: parseInt(bookingData.selectedCabPrice as string) || 0,
+          _id: (bookingData.selectedCabId as string) || '',
         },
         traveller: {
           ...baseData.traveller,
-          pickup: formData.pickup || bookingData.address || '',
-          drop: formData.drop || bookingData.airport || '',
+          pickup: (formData.pickup as string) || (bookingData.address as string) || '',
+          drop: (formData.drop as string) || (bookingData.airport as string) || '',
         },
-        date: bookingData.date,
-        time: bookingData.time || bookingData.pickupTime,
-        serviceType: bookingData.pickupDropType?.toLowerCase() || 'drop',
-        otherLocation: bookingData.address || '',
+        date: bookingData.date as string,
+        time: (bookingData.time as string) || (bookingData.pickupTime as string),
+        serviceType: (bookingData.pickupDropType as string)?.toLowerCase() || 'drop',
+        otherLocation: (bookingData.address as string) || '',
       };
 
     case 'LOCAL':
       return {
         ...baseData,
-        route: `${bookingData.city} | ${bookingData.duration || '4hr'}/${bookingData.estimatedDistance || '40km'} | ${bookingData.date} ${bookingData.time || bookingData.pickupTime}`,
+        route: `${bookingData.city as string} | ${(bookingData.duration as string) || '4hr'}/${(bookingData.estimatedDistance as string) || '40km'} | ${bookingData.date as string} ${(bookingData.time as string) || (bookingData.pickupTime as string)}`,
         car: {
-          type: bookingData.selectedCabType || 'sedan',
+          type: (bookingData.selectedCabType as string) || 'sedan',
           available: true,
-          price: parseInt(bookingData.selectedCabPrice) || 0,
-          _id: bookingData.selectedCabId || '',
+          price: parseInt(bookingData.selectedCabPrice as string) || 0,
+          _id: (bookingData.selectedCabId as string) || '',
         },
         traveller: {
           ...baseData.traveller,
-          pickupAddress: formData.pickup || bookingData.pickupAddress || '',
-          dropAddress: formData.drop || bookingData.dropAddress || '',
+          pickupAddress: (formData.pickup as string) || (bookingData.pickupAddress as string) || '',
+          dropAddress: (formData.drop as string) || (bookingData.dropAddress as string) || '',
         },
       };
 
     case 'OUTSTATION':
       return {
         ...baseData,
-        route: `${bookingData.from} ➡️ ${bookingData.to}`,
+        route: `${bookingData.from as string} ➡️ ${bookingData.to as string}`,
         cab: {
-          type: bookingData.selectedCabType || 'suv',
+          type: (bookingData.selectedCabType as string) || 'suv',
           available: true,
-          price: parseInt(bookingData.selectedCabPrice) || 0,
-          _id: bookingData.selectedCabId || '',
+          price: parseInt(bookingData.selectedCabPrice as string) || 0,
+          _id: (bookingData.selectedCabId as string) || '',
         },
         traveller: {
           ...baseData.traveller,
-          pickup: formData.pickup || bookingData.pickupAddress || '',
-          drop: formData.drop || bookingData.dropAddress || '',
+          pickup: (formData.pickup as string) || (bookingData.pickupAddress as string) || '',
+          drop: (formData.drop as string) || (bookingData.dropAddress as string) || '',
         },
       };
 
@@ -243,21 +256,21 @@ export const prepareEmailData = (
 
 // Helper function to prepare booking request data
 export const prepareBookingRequestData = (
-  bookingData: any,
-  formData: any,
+  bookingData: Record<string, unknown>,
+  formData: Record<string, unknown>,
   serviceType: 'AIRPORT' | 'LOCAL' | 'OUTSTATION',
   paymentMethod: string
 ): BookingRequestData => {
   const baseData = {
     serviceType,
     traveller: {
-      name: formData.name,
-      email: formData.email,
-      mobile: formData.mobile,
-      remark: formData.remark || '',
-      gst: formData.gstDetails ? (formData.gst || 'GST Details Required') : '',
-      whatsapp: formData.whatsapp || false,
-      gstDetails: formData.gstDetails || false,
+      name: formData.name as string,
+      email: formData.email as string,
+      mobile: formData.mobile as string,
+      remark: (formData.remark as string) || '',
+      gst: formData.gstDetails ? ((formData.gst as string) || 'GST Details Required') : '',
+      whatsapp: (formData.whatsapp as boolean) || false,
+      gstDetails: (formData.gstDetails as boolean) || false,
     },
     paymentMethod,
   };
@@ -266,64 +279,64 @@ export const prepareBookingRequestData = (
     case 'AIRPORT':
       let route = '';
       if (bookingData.pickupDropType === 'PICKUP') {
-        route = `Pickup from ${bookingData.airport}`;
+        route = `Pickup from ${bookingData.airport as string}`;
       } else {
-        route = `Drop to ${bookingData.airport}`;
+        route = `Drop to ${bookingData.airport as string}`;
       }
 
       return {
         ...baseData,
         route: route,
         cab: {
-          type: bookingData.selectedCabType || 'sedan',
-          price: parseInt(bookingData.selectedCabPrice) || 0,
-          _id: bookingData.selectedCabId || '',
+          type: (bookingData.selectedCabType as string) || 'sedan',
+          price: parseInt(bookingData.selectedCabPrice as string) || 0,
+          _id: (bookingData.selectedCabId as string) || '',
         },
         traveller: {
           ...baseData.traveller,
-          pickup: formData.pickup || bookingData.address || '',
-          drop: formData.drop || bookingData.airport || '',
+          pickup: (formData.pickup as string) || (bookingData.address as string) || '',
+          drop: (formData.drop as string) || (bookingData.airport as string) || '',
         },
-        date: bookingData.date,
-        time: bookingData.time || bookingData.pickupTime,
+        date: bookingData.date as string,
+        time: (bookingData.time as string) || (bookingData.pickupTime as string),
       };
 
     case 'LOCAL':
       return {
         ...baseData,
-        route: `${bookingData.city} | ${bookingData.duration || '4hr'}/${bookingData.estimatedDistance || '40km'} | ${bookingData.date} ${bookingData.time || bookingData.pickupTime}`,
+        route: `${bookingData.city as string} | ${(bookingData.duration as string) || '4hr'}/${(bookingData.estimatedDistance as string) || '40km'} | ${bookingData.date as string} ${(bookingData.time as string) || (bookingData.pickupTime as string)}`,
         cab: {
-          type: bookingData.selectedCabType || 'sedan',
-          price: parseInt(bookingData.selectedCabPrice) || 0,
-          _id: bookingData.selectedCabId || '',
+          type: (bookingData.selectedCabType as string) || 'sedan',
+          price: parseInt(bookingData.selectedCabPrice as string) || 0,
+          _id: (bookingData.selectedCabId as string) || '',
         },
         traveller: {
           ...baseData.traveller,
-          pickup: formData.pickup || bookingData.pickupAddress || '',
-          drop: formData.drop || bookingData.dropAddress || '',
+          pickup: (formData.pickup as string) || (bookingData.pickupAddress as string) || '',
+          drop: (formData.drop as string) || (bookingData.dropAddress as string) || '',
         },
-        date: bookingData.date,
-        time: bookingData.time || bookingData.pickupTime,
-        estimatedDistance: bookingData.estimatedDistance || '40km',
+        date: bookingData.date as string,
+        time: (bookingData.time as string) || (bookingData.pickupTime as string),
+        estimatedDistance: (bookingData.estimatedDistance as string) || '40km',
       };
 
     case 'OUTSTATION':
       return {
         ...baseData,
-        route: `${bookingData.from} ➡️ ${bookingData.to}`,
+        route: `${bookingData.from as string} ➡️ ${bookingData.to as string}`,
         cab: {
-          type: bookingData.selectedCabType || 'suv',
-          price: parseInt(bookingData.selectedCabPrice) || 0,
-          _id: bookingData.selectedCabId || '',
+          type: (bookingData.selectedCabType as string) || 'suv',
+          price: parseInt(bookingData.selectedCabPrice as string) || 0,
+          _id: (bookingData.selectedCabId as string) || '',
         },
         traveller: {
           ...baseData.traveller,
-          pickup: formData.pickup || bookingData.pickupAddress || '',
-          drop: formData.drop || bookingData.dropAddress || '',
+          pickup: (formData.pickup as string) || (bookingData.pickupAddress as string) || '',
+          drop: (formData.drop as string) || (bookingData.dropAddress as string) || '',
         },
-        date: bookingData.date,
-        time: bookingData.time || bookingData.pickupTime,
-        estimatedDistance: bookingData.estimatedDistance || '',
+        date: bookingData.date as string,
+        time: (bookingData.time as string) || (bookingData.pickupTime as string),
+        estimatedDistance: (bookingData.estimatedDistance as string) || '',
       };
 
     default:

@@ -43,6 +43,11 @@ interface BookingRequest {
   };
   adminNotes?: string;
   createdAt: string;
+  calculatedPayment?: {
+    remainingAmount: number;
+    paymentStatus: string;
+    totalFare: number;
+  };
 }
 
 interface DriverDetails {
@@ -212,6 +217,18 @@ export default function UserDashboard() {
           Cash on Delivery
         </span>
       );
+    } else if (paymentMethod === "20") {
+      return (
+        <span className="px-2 py-1 rounded-full text-xs font-semibold text-white bg-blue-600">
+          20% Advance
+        </span>
+      );
+    } else if (paymentMethod === "100") {
+      return (
+        <span className="px-2 py-1 rounded-full text-xs font-semibold text-white bg-purple-600">
+          100% Advance
+        </span>
+      );
     }
     return (
       <span className="px-2 py-1 rounded-full text-xs font-semibold text-white bg-blue-600">
@@ -369,7 +386,7 @@ export default function UserDashboard() {
                       onClick={() => handleSort("cab.price")}
                       className="flex items-center space-x-1 sm:space-x-2 text-white font-semibold hover:text-yellow-500 transition-colors text-xs sm:text-sm"
                     >
-                      <span>Price</span>
+                      <span>Remaining Payment</span>
                       {sortBy === "cab.price" && (
                         <span>{sortOrder === "asc" ? "↑" : "↓"}</span>
                       )}
@@ -423,8 +440,21 @@ export default function UserDashboard() {
                         {request.date || "N/A"} {request.time || "N/A"}
                       </div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-white font-semibold text-xs sm:text-sm">
-                      ₹{(request.cab.price || 0).toLocaleString()}
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      <div className="text-white font-semibold text-xs sm:text-sm">
+                        ₹
+                        {(
+                          request.calculatedPayment?.remainingAmount ||
+                          request.cab.price ||
+                          0
+                        ).toLocaleString()}
+                      </div>
+                      {request.calculatedPayment && (
+                        <div className="text-xs text-gray-400">
+                          Total: ₹
+                          {request.calculatedPayment.totalFare.toLocaleString()}
+                        </div>
+                      )}
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       {getPaymentBadge(request.paymentMethod || "0")}
@@ -558,8 +588,7 @@ export default function UserDashboard() {
                   value={driverDetails.vehicleNumber}
                   onChange={(e) => {
                     // Allow both numbers and text (letters), plus spaces and dashes
-                    const value = e.target.value
-                      .toUpperCase();
+                    const value = e.target.value.toUpperCase();
                     setDriverDetails((prev) => ({
                       ...prev,
                       vehicleNumber: value,

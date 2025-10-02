@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "@/styles/theme";
 import {
   getBookingRequests,
@@ -77,12 +77,7 @@ export default function UserDashboard() {
   const [limit, setLimit] = useState(10);
   const [totalBookings, setTotalBookings] = useState(0);
 
-  // Fetch booking requests on component mount
-  useEffect(() => {
-    fetchBookingRequests();
-  }, [currentPage, limit]);
-
-  const fetchBookingRequests = async () => {
+  const fetchBookingRequests = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await getBookingRequests(currentPage, limit);
@@ -94,7 +89,12 @@ export default function UserDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, limit]);
+
+  // Fetch booking requests on component mount
+  useEffect(() => {
+    fetchBookingRequests();
+  }, [fetchBookingRequests]);
 
   const filteredRequests = bookingRequests.filter((request) => {
     const matchesSearch =
@@ -265,6 +265,19 @@ export default function UserDashboard() {
         );
 
       case "accepted":
+        if (request.driverDetails) {
+          return (
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleSendDriverDetails(request._id)}
+                className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
+                title="Resend driver details to customer"
+              >
+                Send Again
+              </button>
+            </div>
+          );
+        }
         return (
           <div className="flex space-x-2">
             <button
@@ -277,9 +290,22 @@ export default function UserDashboard() {
         );
 
       case "driver_sent":
+        if (request.driverDetails) {
+          return (
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleSendDriverDetails(request._id)}
+                className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
+                title="Resend driver details to customer"
+              >
+                Send Again
+              </button>
+            </div>
+          );
+        }
         return (
           <div className="text-green-500 text-sm font-semibold">
-            Driver details already sent
+            Driver assigned
           </div>
         );
 
@@ -406,6 +432,9 @@ export default function UserDashboard() {
                     Status
                   </th>
                   <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-xs sm:text-sm">
+                    Driver Details
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-xs sm:text-sm">
                     Actions
                   </th>
                 </tr>
@@ -477,6 +506,25 @@ export default function UserDashboard() {
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       {getStatusBadge(request.status || "pending")}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      {request.driverDetails ? (
+                        <div className="text-xs">
+                          <div className="text-white font-semibold">
+                            {request.driverDetails.name}
+                          </div>
+                          <div className="text-gray-400">
+                            📱 {request.driverDetails.whatsappNumber}
+                          </div>
+                          <div className="text-gray-400">
+                            🚗 {request.driverDetails.vehicleNumber}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          Not assigned
+                        </span>
+                      )}
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       {renderActionButtons(request)}

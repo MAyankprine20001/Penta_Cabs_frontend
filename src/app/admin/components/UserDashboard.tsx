@@ -74,18 +74,21 @@ export default function UserDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalBookings, setTotalBookings] = useState(0);
 
   // Fetch booking requests on component mount
   useEffect(() => {
     fetchBookingRequests();
-  }, [currentPage]);
+  }, [currentPage, limit]);
 
   const fetchBookingRequests = async () => {
     try {
       setIsLoading(true);
-      const response = await getBookingRequests(currentPage, 10);
+      const response = await getBookingRequests(currentPage, limit);
       setBookingRequests(response.bookingRequests);
       setTotalPages(response.totalPages);
+      setTotalBookings(response.total);
     } catch (error) {
       console.error("Error fetching booking requests:", error);
     } finally {
@@ -134,6 +137,10 @@ export default function UserDashboard() {
       setSortBy(field);
       setSortOrder("asc");
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const handleAcceptBooking = async (bookingId: string) => {
@@ -494,27 +501,74 @@ export default function UserDashboard() {
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center space-x-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
-          >
-            Previous
-          </button>
-          <span className="px-3 py-2 text-white">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="px-3 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
-          >
-            Next
-          </button>
+      {totalBookings > 0 && (
+        <div className="flex items-center justify-between bg-gray-800 px-6 py-4 border border-gray-600 rounded-lg">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-300">
+              Page {currentPage} of {totalPages}
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">Show</span>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  const newLimit = parseInt(e.target.value);
+                  setLimit(newLimit);
+                  setCurrentPage(1); // Reset to first page when changing limit
+                }}
+                className="px-2 py-1 text-sm border border-gray-500 rounded bg-gray-700 text-white focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="w-8 h-8 flex items-center justify-center border border-gray-500 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-700 transition-colors"
+              title="Previous page"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="w-8 h-8 flex items-center justify-center border border-gray-500 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-700 transition-colors"
+              title="Next page"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
 

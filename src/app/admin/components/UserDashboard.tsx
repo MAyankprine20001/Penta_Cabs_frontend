@@ -63,7 +63,13 @@ export default function UserDashboard() {
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
+  const [isUserDetailsModalOpen, setIsUserDetailsModalOpen] = useState(false);
+  const [isDriverDetailsModalOpen, setIsDriverDetailsModalOpen] =
+    useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
+    null
+  );
+  const [selectedBooking, setSelectedBooking] = useState<BookingRequest | null>(
     null
   );
   const [driverDetails, setDriverDetails] = useState<DriverDetails>({
@@ -177,12 +183,154 @@ export default function UserDashboard() {
 
   const handleCloseModal = () => {
     setIsDriverModalOpen(false);
+    setIsUserDetailsModalOpen(false);
+    setIsDriverDetailsModalOpen(false);
     setSelectedBookingId(null);
+    setSelectedBooking(null);
     setDriverDetails({
       name: "",
       whatsappNumber: "",
       vehicleNumber: "",
     });
+  };
+
+  const handleShowUserDetails = (booking: BookingRequest) => {
+    setSelectedBooking(booking);
+    setIsUserDetailsModalOpen(true);
+  };
+
+  const handleShowDriverDetails = (booking: BookingRequest) => {
+    setSelectedBooking(booking);
+    setIsDriverDetailsModalOpen(true);
+  };
+
+  const sendUserDetailsToWhatsApp = (booking: BookingRequest) => {
+    if (!booking.driverDetails?.whatsappNumber) return;
+
+    const message = `User Details for Booking:
+Name: ${booking.traveller.name}
+Email: ${booking.traveller.email}
+Phone: ${booking.traveller.mobile}
+Route: ${booking.route}
+Service: ${booking.serviceType}
+Cab Type: ${booking.cab.type}
+Date: ${booking.date || "N/A"}
+Time: ${booking.time || "N/A"}
+Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
+Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
+
+Please contact the customer for pickup details.`;
+
+    const whatsappUrl = `https://wa.me/${booking.driverDetails.whatsappNumber.replace(
+      /[^0-9]/g,
+      ""
+    )}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+  const sendDriverDetailsToWhatsApp = (booking: BookingRequest) => {
+    if (!booking.driverDetails || !booking.traveller.mobile) return;
+
+    const message = `Your Driver Details:
+Driver Name: ${booking.driverDetails.name}
+Driver Contact: ${booking.driverDetails.whatsappNumber}
+Vehicle Number: ${booking.driverDetails.vehicleNumber}
+Route: ${booking.route}
+Service: ${booking.serviceType}
+Cab Type: ${booking.cab.type}
+
+Your driver will contact you soon for pickup.`;
+
+    const whatsappUrl = `https://wa.me/${booking.traveller.mobile.replace(
+      /[^0-9]/g,
+      ""
+    )}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+  const getPaymentMethodText = (paymentMethod: string) => {
+    if (paymentMethod === "0") return "Cash on Delivery";
+    if (paymentMethod === "20") return "20% Advance";
+    if (paymentMethod === "100") return "100% Advance";
+    return "Advance Payment";
+  };
+
+  // Three-dot menu component
+  const ThreeDotMenu = ({ request }: { request: BookingRequest }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-1 text-gray-400 hover:text-white transition-colors"
+          title="More options"
+        >
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+          </svg>
+        </button>
+
+        {isOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-10"
+              onClick={() => setIsOpen(false)}
+            />
+            <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-20">
+              <div className="py-1">
+                <button
+                  onClick={() => {
+                    handleShowUserDetails(request);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                  User Details
+                </button>
+                {request.driverDetails && (
+                  <button
+                    onClick={() => {
+                      handleShowDriverDetails(request);
+                      setIsOpen(false);
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
+                    </svg>
+                    Driver Details
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
   };
 
   const handleSubmitDriverDetails = async () => {
@@ -248,82 +396,86 @@ export default function UserDashboard() {
     switch (request.status) {
       case "pending":
         return (
-          <div className="flex flex-col space-y-2">
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handleAcceptBooking(request._id)}
-                className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => handleDeclineBooking(request._id)}
-                className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
-              >
-                Decline
-              </button>
-            </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handleAcceptBooking(request._id)}
+              className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
+            >
+              Accept
+            </button>
+            <button
+              onClick={() => handleDeclineBooking(request._id)}
+              className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
+            >
+              Decline
+            </button>
+            <ThreeDotMenu request={request} />
           </div>
         );
 
       case "accepted":
         if (request.driverDetails) {
           return (
-            <div className="flex flex-col space-y-2">
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleSendDriverDetails(request._id)}
-                  className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
-                  title="Resend driver details to customer"
-                >
-                  Send Again
-                </button>
-              </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handleSendDriverDetails(request._id)}
+                className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
+                title="Resend driver details to customer"
+              >
+                Send Again
+              </button>
+              <ThreeDotMenu request={request} />
             </div>
           );
         }
         return (
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
             <button
               onClick={() => handleSendDriverDetails(request._id)}
               className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
             >
               Send Driver Details
             </button>
+            <ThreeDotMenu request={request} />
           </div>
         );
 
       case "driver_sent":
         if (request.driverDetails) {
           return (
-            <div className="flex flex-col space-y-2">
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleSendDriverDetails(request._id)}
-                  className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
-                  title="Resend driver details to customer"
-                >
-                  Send Again
-                </button>
-              </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handleSendDriverDetails(request._id)}
+                className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
+                title="Resend driver details to customer"
+              >
+                Send Again
+              </button>
+              <ThreeDotMenu request={request} />
             </div>
           );
         }
         return (
-          <div className="text-green-500 text-sm font-semibold">
-            Driver assigned
+          <div className="flex items-center space-x-2">
+            <div className="text-green-500 text-sm font-semibold">
+              Driver assigned
+            </div>
+            <ThreeDotMenu request={request} />
           </div>
         );
 
       case "declined":
         return (
-          <div className="text-red-500 text-sm font-semibold">
-            Booking declined
+          <div className="flex items-center space-x-2">
+            <div className="text-red-500 text-sm font-semibold">
+              Booking declined
+            </div>
+            <ThreeDotMenu request={request} />
           </div>
         );
 
       default:
-        return null;
+        return <ThreeDotMenu request={request} />;
     }
   };
 
@@ -489,7 +641,7 @@ export default function UserDashboard() {
                           request.calculatedPayment?.remainingAmount ||
                           request.cab.price ||
                           0
-                        ).toLocaleString()}
+                        )?.toLocaleString() || "0"}
                       </div>
                       {request.calculatedPayment && (
                         <>
@@ -735,6 +887,376 @@ export default function UserDashboard() {
           </div>
         </div>
       )}
+
+      {/* User Details Modal */}
+      {isUserDetailsModalOpen && selectedBooking && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div
+            className="bg-gray-900 rounded-2xl w-full max-w-2xl mx-auto border border-gray-700 flex flex-col max-h-[90vh]"
+            style={{
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center p-6 border-b border-gray-700">
+              <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4">
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-yellow-400">
+                  User Details
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  Customer booking information
+                </p>
+              </div>
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                {/* Personal Information */}
+                <div>
+                  <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
+                    <span className="mr-2">👤</span>
+                    Personal Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Full Name
+                      </label>
+                      <div className="text-white text-lg font-medium">
+                        {selectedBooking.traveller.name || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Email Address
+                      </label>
+                      <div className="text-white text-lg">
+                        {selectedBooking.traveller.email || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Phone Number
+                      </label>
+                      <div className="text-white text-lg font-medium">
+                        {selectedBooking.traveller.mobile || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Payment Method
+                      </label>
+                      <div className="text-white text-lg">
+                        {getPaymentMethodText(selectedBooking.paymentMethod)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Booking Information */}
+                <div>
+                  <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
+                    <span className="mr-2">🚗</span>
+                    Booking Information
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Service Type
+                      </label>
+                      <div className="text-white text-lg font-medium">
+                        {selectedBooking.serviceType || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Route
+                      </label>
+                      <div className="text-white text-lg">
+                        {selectedBooking.route || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Date & Time
+                      </label>
+                      <div className="text-white text-lg">
+                        {selectedBooking.date || "N/A"}{" "}
+                        {selectedBooking.time || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Total Amount
+                      </label>
+                      <div className="text-green-400 text-xl font-bold">
+                        ₹{selectedBooking.cab.price?.toLocaleString() || "0"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Remarks */}
+                {selectedBooking.traveller.remark && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
+                      <span className="mr-2">💬</span>
+                      Customer Remarks
+                    </h4>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <div className="text-white text-lg">
+                        {selectedBooking.traveller.remark}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-4 p-6 border-t border-gray-700">
+              <button
+                onClick={() => sendUserDetailsToWhatsApp(selectedBooking)}
+                disabled={!selectedBooking.driverDetails?.whatsappNumber}
+                className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
+                </svg>
+                <span>Send to WhatsApp</span>
+              </button>
+              <button
+                onClick={handleCloseModal}
+                className="px-6 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Driver Details Modal */}
+      {isDriverDetailsModalOpen &&
+        selectedBooking &&
+        selectedBooking.driverDetails && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          >
+            <div
+              className="bg-gray-900 rounded-2xl w-full max-w-2xl mx-auto border border-gray-700 flex flex-col max-h-[90vh]"
+              style={{
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              {/* Header */}
+              <div className="flex items-center p-6 border-b border-gray-700">
+                <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4">
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-yellow-400">
+                    Driver Details
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    Assigned driver information
+                  </p>
+                </div>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-6">
+                  {/* Driver Information */}
+                  <div>
+                    <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
+                      <span className="mr-2">🚗</span>
+                      Driver Information
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Driver Name
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.driverDetails.name}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Contact Number
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.driverDetails.whatsappNumber}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Vehicle Number
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.driverDetails.vehicleNumber}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Booking Information */}
+                  <div>
+                    <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
+                      <span className="mr-2">📋</span>
+                      Booking Information
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Customer Name
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.traveller.name}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Service Type
+                        </label>
+                        <div className="text-white text-lg">
+                          {selectedBooking.serviceType}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Date & Time
+                        </label>
+                        <div className="text-white text-lg">
+                          {selectedBooking.date || "N/A"}{" "}
+                          {selectedBooking.time || "N/A"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Route
+                        </label>
+                        <div className="text-white text-lg">
+                          {selectedBooking.route}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Information */}
+                  <div>
+                    <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
+                      <span className="mr-2">📞</span>
+                      Customer Contact
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Customer Phone
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.traveller.mobile}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Customer Email
+                        </label>
+                        <div className="text-white text-lg">
+                          {selectedBooking.traveller.email}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-4 p-6 border-t border-gray-700">
+                <button
+                  onClick={() => sendDriverDetailsToWhatsApp(selectedBooking)}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
+                  </svg>
+                  <span>Send to Customer</span>
+                </button>
+                <button
+                  onClick={handleCloseModal}
+                  className="px-6 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

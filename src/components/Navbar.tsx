@@ -125,7 +125,7 @@ const Navbar: React.FC = () => {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-yellow-500/5 to-transparent" />
 
-        <div className="relative min-h-full flex flex-col overflow-y-auto">
+        <div className="relative h-full flex flex-col overflow-y-auto overscroll-contain scroll-smooth scrollbar-thin scrollbar-thumb-yellow-500/30 scrollbar-track-transparent hover:scrollbar-thumb-yellow-500/50 mobile-menu-scroll">
           {/* Mobile Navigation Menu */}
           <div className="flex-1">
             <NavigationMenu

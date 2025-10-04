@@ -182,7 +182,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({
   if (isMobile) {
     return (
       <div className="w-full h-full bg-transparent">
-        <div className="px-6 py-8 space-y-4 max-h-screen overflow-y-auto">
+        <div className="px-6 py-8 space-y-4 h-full overflow-y-auto overscroll-contain scroll-smooth scrollbar-thin scrollbar-thumb-yellow-500/30 scrollbar-track-transparent hover:scrollbar-thumb-yellow-500/50 mobile-menu-scroll">
           {items.map((item) => (
             <div key={item.label} className="space-y-3">
               <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-3 border border-gray-700/50 shadow-xl">

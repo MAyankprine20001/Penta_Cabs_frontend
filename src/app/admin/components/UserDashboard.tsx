@@ -197,6 +197,101 @@ export default function UserDashboard() {
     }
   };
 
+  // WhatsApp functions
+  const handleSendDriverDetailsToUser = async (request: BookingRequest) => {
+    try {
+      setIsLoading(true);
+
+      const response = await fetch(
+        "http://localhost:5000/api/whatsapp/send-driver-details-to-user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userPhone: request.traveller.mobile,
+            customerName: request.traveller.name,
+            bookingId: request._id,
+            driverName: request.driverDetails?.name || "Driver Name",
+            driverPhone: request.driverDetails?.whatsappNumber || "9876543210",
+            driverLicense: "DL123456789", // You can add this to driver details
+            carNumber: request.driverDetails?.vehicleNumber || "DL01AB1234",
+            carModel: "Swift Dzire", // You can add this to driver details
+            carType: request.cab.type,
+            pickupLocation:
+              request.traveller.pickup || request.traveller.pickupAddress,
+            dropLocation:
+              request.traveller.drop || request.traveller.dropAddress,
+            date: request.date,
+            time: request.time,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Driver details sent to user successfully!");
+      } else {
+        alert("Failed to send driver details: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error sending driver details:", error);
+      alert("Error sending driver details");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendUserDetailsToDriver = async (request: BookingRequest) => {
+    try {
+      setIsLoading(true);
+
+      const response = await fetch(
+        "http://localhost:5000/api/whatsapp/send-user-details-to-driver",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            driverPhone: request.driverDetails?.whatsappNumber || "9876543210",
+            driverName: request.driverDetails?.name || "Driver Name",
+            customerName: request.traveller.name,
+            customerPhone: request.traveller.mobile,
+            customerEmail: request.traveller.email,
+            bookingId: request._id,
+            pickupLocation:
+              request.traveller.pickup || request.traveller.pickupAddress,
+            dropLocation:
+              request.traveller.drop || request.traveller.dropAddress,
+            date: request.date,
+            time: request.time,
+            carType: request.cab.type,
+            totalFare: request.cab.price,
+            serviceType: request.serviceType,
+            specialInstructions:
+              request.traveller.remark || "Please arrive on time",
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("User details sent to driver successfully!");
+      } else {
+        alert("Failed to send user details: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error sending user details:", error);
+      alert("Error sending user details");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { color: "bg-yellow-600", text: "Pending" },
@@ -248,33 +343,73 @@ export default function UserDashboard() {
     switch (request.status) {
       case "pending":
         return (
-          <div className="flex space-x-2">
-            <button
-              onClick={() => handleAcceptBooking(request._id)}
-              className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
-            >
-              Accept
-            </button>
-            <button
-              onClick={() => handleDeclineBooking(request._id)}
-              className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
-            >
-              Decline
-            </button>
+          <div className="flex flex-col space-y-2">
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleAcceptBooking(request._id)}
+                className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
+              >
+                Accept
+              </button>
+              <button
+                onClick={() => handleDeclineBooking(request._id)}
+                className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
+              >
+                Decline
+              </button>
+            </div>
+            {/* WhatsApp buttons for pending bookings */}
+            {request.driverDetails && (
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleSendDriverDetailsToUser(request)}
+                  className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors flex items-center gap-1"
+                  title="Send driver details to customer"
+                >
+                  <span>📱</span> Driver Details
+                </button>
+                <button
+                  onClick={() => handleSendUserDetailsToDriver(request)}
+                  className="px-2 py-1 bg-purple-500 text-white rounded text-xs hover:bg-purple-600 transition-colors flex items-center gap-1"
+                  title="Send customer details to driver"
+                >
+                  <span>📱</span> User Details
+                </button>
+              </div>
+            )}
           </div>
         );
 
       case "accepted":
         if (request.driverDetails) {
           return (
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handleSendDriverDetails(request._id)}
-                className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
-                title="Resend driver details to customer"
-              >
-                Send Again
-              </button>
+            <div className="flex flex-col space-y-2">
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleSendDriverDetails(request._id)}
+                  className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
+                  title="Resend driver details to customer"
+                >
+                  Send Again
+                </button>
+              </div>
+              {/* WhatsApp buttons for accepted bookings */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleSendDriverDetailsToUser(request)}
+                  className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors flex items-center gap-1"
+                  title="Send driver details to customer"
+                >
+                  <span>📱</span> Driver Details
+                </button>
+                <button
+                  onClick={() => handleSendUserDetailsToDriver(request)}
+                  className="px-2 py-1 bg-purple-500 text-white rounded text-xs hover:bg-purple-600 transition-colors flex items-center gap-1"
+                  title="Send customer details to driver"
+                >
+                  <span>📱</span> User Details
+                </button>
+              </div>
             </div>
           );
         }
@@ -292,14 +427,33 @@ export default function UserDashboard() {
       case "driver_sent":
         if (request.driverDetails) {
           return (
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handleSendDriverDetails(request._id)}
-                className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
-                title="Resend driver details to customer"
-              >
-                Send Again
-              </button>
+            <div className="flex flex-col space-y-2">
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleSendDriverDetails(request._id)}
+                  className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
+                  title="Resend driver details to customer"
+                >
+                  Send Again
+                </button>
+              </div>
+              {/* WhatsApp buttons for driver sent bookings */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleSendDriverDetailsToUser(request)}
+                  className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors flex items-center gap-1"
+                  title="Send driver details to customer"
+                >
+                  <span>📱</span> Driver Details
+                </button>
+                <button
+                  onClick={() => handleSendUserDetailsToDriver(request)}
+                  className="px-2 py-1 bg-purple-500 text-white rounded text-xs hover:bg-purple-600 transition-colors flex items-center gap-1"
+                  title="Send customer details to driver"
+                >
+                  <span>📱</span> User Details
+                </button>
+              </div>
             </div>
           );
         }

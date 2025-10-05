@@ -30,6 +30,7 @@ interface BookingRequest {
     type: string;
     price: number;
     _id: string;
+    name: string;
   };
   date?: string;
   time?: string;
@@ -78,7 +79,8 @@ export default function UserDashboard() {
     vehicleNumber: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmittingDriverDetails, setIsSubmittingDriverDetails] = useState(false);
+  const [isSubmittingDriverDetails, setIsSubmittingDriverDetails] =
+    useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -214,7 +216,7 @@ Email: ${booking.traveller.email}
 Phone: ${booking.traveller.mobile}
 Route: ${booking.route}
 Service: ${booking.serviceType}
-Cab Type: ${booking.cab.type}
+Cab Name: ${booking.cab.name || "N/A"}
 Pickup Location: ${booking.traveller.pickup || "N/A"}
 Drop Location: ${booking.traveller.drop || "N/A"}
 Date: ${booking.date || "N/A"}
@@ -241,7 +243,7 @@ Driver Contact: ${booking.driverDetails.whatsappNumber}
 Vehicle Number: ${booking.driverDetails.vehicleNumber}
 Route: ${booking.route}
 Service: ${booking.serviceType}
-Cab Type: ${booking.cab.type}
+Cab Name: ${booking.cab.name || "N/A"}
 Pickup Location: ${booking.traveller.pickup || "N/A"}
 Drop Location: ${booking.traveller.drop || "N/A"}
 Date: ${booking.date || "N/A"}
@@ -582,6 +584,9 @@ Your driver will contact you soon for pickup.`;
                     Service
                   </th>
                   <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-xs sm:text-sm">
+                    Cab Name
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-xs sm:text-sm">
                     Route
                   </th>
                   <th className="px-3 sm:px-6 py-3 sm:py-4 text-left">
@@ -636,6 +641,11 @@ Your driver will contact you soon for pickup.`;
                       </div>
                       <div className="text-xs text-gray-400">
                         {request.cab.type || "N/A"}
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      <div className="text-white text-xs sm:text-sm font-medium">
+                        {request.cab.name || "N/A"}
                       </div>
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
@@ -1071,7 +1081,6 @@ Your driver will contact you soon for pickup.`;
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
 

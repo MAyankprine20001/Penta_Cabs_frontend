@@ -215,10 +215,13 @@ Phone: ${booking.traveller.mobile}
 Route: ${booking.route}
 Service: ${booking.serviceType}
 Cab Type: ${booking.cab.type}
+Pickup Location: ${booking.traveller.pickup || "N/A"}
+Drop Location: ${booking.traveller.drop || "N/A"}
 Date: ${booking.date || "N/A"}
 Time: ${booking.time || "N/A"}
 Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
 Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
+Distance: ${booking.estimatedDistance || "N/A"} km
 
 Please contact the customer for pickup details.`;
 
@@ -239,6 +242,11 @@ Vehicle Number: ${booking.driverDetails.vehicleNumber}
 Route: ${booking.route}
 Service: ${booking.serviceType}
 Cab Type: ${booking.cab.type}
+Pickup Location: ${booking.traveller.pickup || "N/A"}
+Drop Location: ${booking.traveller.drop || "N/A"}
+Date: ${booking.date || "N/A"}
+Time: ${booking.time || "N/A"}
+Distance: ${booking.estimatedDistance || "N/A"} km
 
 Your driver will contact you soon for pickup.`;
 
@@ -1012,6 +1020,30 @@ Your driver will contact you soon for pickup.`;
                         {selectedBooking.serviceType || "N/A"}
                       </div>
                     </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Pickup Location
+                      </label>
+                      <div className="text-white text-lg font-medium">
+                        {selectedBooking.traveller.pickup || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Drop Location
+                      </label>
+                      <div className="text-white text-lg font-medium">
+                        {selectedBooking.traveller.drop || "N/A"}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Distance
+                      </label>
+                      <div className="text-white text-lg font-medium">
+                        {selectedBooking.estimatedDistance || "N/A"} km
+                      </div>
+                    </div>
                     <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 md:col-span-2">
                       <label className="block text-sm font-medium text-gray-400 mb-2">
                         Route
@@ -1181,6 +1213,30 @@ Your driver will contact you soon for pickup.`;
                         </label>
                         <div className="text-white text-lg">
                           {selectedBooking.serviceType}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Pickup Location
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.traveller.pickup || "N/A"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Drop Location
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.traveller.drop || "N/A"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Distance
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.estimatedDistance || "N/A"} km
                         </div>
                       </div>
                       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">

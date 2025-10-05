@@ -2,7 +2,7 @@
 // src/app/cab-booking/page.jsx
 "use client";
 import React, { useState, useEffect, Suspense, use } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { environment } from "@/config/environment";
 import {
   sendAirportEmail,
@@ -85,9 +85,11 @@ const CabBookingContent = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [isProcessingEmail, setIsProcessingEmail] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   // Parse URL parameters for booking and cab data
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [bookingData, setBookingData] = useState<Record<string, string>>({});
 
   const loadScript = (src: string) => {
@@ -332,10 +334,8 @@ const CabBookingContent = () => {
 
       // Proceed with payment logic
       if (selectedPayment === "0") {
-        // For cash payment, show success message
-        alert(
-          "Booking request submitted successfully! Our team will review and confirm your booking. You can pay cash to the driver upon confirmation."
-        );
+        // For cash payment, show success message using modal
+        setShowConfirmationModal(true);
         console.log("Cash payment selected - booking request created");
       } else {
         // For advance payments, open payment gateway
@@ -401,16 +401,19 @@ const CabBookingContent = () => {
       console.error("Error sending confirmation email:", error);
     }
 
-    alert(
-      `Payment of ₹${
-        paymentOptions.find((opt) => opt.id === selectedPayment)?.amount
-      } successful! Booking confirmed.`
-    );
+    // Show confirmation modal instead of alert
+    setShowConfirmationModal(true);
   };
 
   const getSelectedAmount = () => {
     const selected = paymentOptions.find((opt) => opt.id === selectedPayment);
     return selected ? selected.amount : 0;
+  };
+
+  const handleConfirmModalOk = () => {
+    setShowConfirmationModal(false);
+    // Redirect to home page
+    router.push('/');
   };
 
   return (
@@ -802,6 +805,86 @@ const CabBookingContent = () => {
           background: theme.gradients.gold,
         }}
       />
+
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div
+            className="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-auto border-2 border-yellow-400"
+            style={{
+              boxShadow: `0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 215, 0, 0.3)`,
+            }}
+          >
+            {/* Success Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-12 h-12 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h2
+              className="text-2xl font-bold text-center mb-4"
+              style={{
+                color: theme.colors.accent.gold,
+                fontWeight: theme.typography.fontWeight.bold,
+              }}
+            >
+              Thank You!
+            </h2>
+
+            {/* Message */}
+            <div className="text-center mb-8">
+              <p
+                className="text-lg mb-2"
+                style={{ color: theme.colors.text.primary }}
+              >
+                Your booking confirmation is done!
+              </p>
+              <p
+                className="text-sm"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                Payment of ₹{getSelectedAmount()} was successful. 
+                We have sent a confirmation email to your registered email address.
+              </p>
+              <p
+                className="text-sm mt-2"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                Our team will contact you shortly with driver details.
+              </p>
+            </div>
+
+            {/* OK Button */}
+            <button
+              onClick={handleConfirmModalOk}
+              className="w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105"
+              style={{
+                background: theme.gradients.gold,
+                color: theme.colors.primary.black,
+                fontWeight: theme.typography.fontWeight.bold,
+                boxShadow: `0 10px 30px ${theme.colors.shadow.gold}`,
+                border: `2px solid ${theme.colors.accent.lightGold}`,
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Custom CSS Animations */}
       <style jsx>{`

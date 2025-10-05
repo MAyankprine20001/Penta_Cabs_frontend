@@ -484,7 +484,7 @@ const UserIntercityRide = () => {
               onChange={handleTravellerChange}
               name="drop"
             />
-            <ThemedInput
+            {/* <ThemedInput
               placeholder="Remark for Driver"
               value={traveller.remark}
               onChange={handleTravellerChange}
@@ -495,7 +495,7 @@ const UserIntercityRide = () => {
               value={traveller.gst}
               onChange={handleTravellerChange}
               name="gst"
-            />
+            /> */}
 
             <ThemedButton onClick={handleBooking} className="w-full">
               🚀 Proceed

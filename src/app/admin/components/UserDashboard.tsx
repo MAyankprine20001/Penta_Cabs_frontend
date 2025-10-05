@@ -78,6 +78,7 @@ export default function UserDashboard() {
     vehicleNumber: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmittingDriverDetails, setIsSubmittingDriverDetails] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -337,11 +338,14 @@ Your driver will contact you soon for pickup.`;
     if (!selectedBookingId) return;
 
     try {
+      setIsSubmittingDriverDetails(true);
       await addDriverDetails(selectedBookingId, driverDetails);
       await fetchBookingRequests(); // Refresh the list
       handleCloseModal();
     } catch (error) {
       console.error("Error adding driver details:", error);
+    } finally {
+      setIsSubmittingDriverDetails(false);
     }
   };
 
@@ -449,7 +453,7 @@ Your driver will contact you soon for pickup.`;
                 className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors"
                 title="Resend driver details to customer"
               >
-                Send Again
+                Change Driver
               </button>
               <ThreeDotMenu request={request} />
             </div>
@@ -873,13 +877,22 @@ Your driver will contact you soon for pickup.`;
             <div className="flex space-x-3 mt-4 sm:mt-6">
               <button
                 onClick={handleSubmitDriverDetails}
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-colors text-sm sm:text-base"
+                disabled={isSubmittingDriverDetails}
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 disabled:bg-green-700 disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm sm:text-base flex items-center justify-center"
               >
-                Send
+                {isSubmittingDriverDetails ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Sending...
+                  </>
+                ) : (
+                  "Send"
+                )}
               </button>
               <button
                 onClick={handleCloseModal}
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors text-sm sm:text-base"
+                disabled={isSubmittingDriverDetails}
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 disabled:bg-gray-700 disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               >
                 Cancel
               </button>
@@ -913,7 +926,7 @@ Your driver will contact you soon for pickup.`;
               </div>
               <div className="flex-1">
                 <h3 className="text-2xl font-bold text-yellow-400">
-                  User Details
+                  User Details send to driver
                 </h3>
                 <p className="text-gray-300 text-sm">
                   Customer booking information
@@ -1027,20 +1040,6 @@ Your driver will contact you soon for pickup.`;
                   </div>
                 </div>
 
-                {/* Remarks */}
-                {selectedBooking.traveller.remark && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
-                      <span className="mr-2">💬</span>
-                      Customer Remarks
-                    </h4>
-                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-                      <div className="text-white text-lg">
-                        {selectedBooking.traveller.remark}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -1098,7 +1097,7 @@ Your driver will contact you soon for pickup.`;
                 </div>
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold text-yellow-400">
-                    Driver Details
+                    Driver Details send to user
                   </h3>
                   <p className="text-gray-300 text-sm">
                     Assigned driver information

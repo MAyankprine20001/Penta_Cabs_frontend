@@ -611,7 +611,7 @@ const BookingDetailsContent: React.FC = () => {
                 </div>
 
                 {/* Remark Field */}
-                <div>
+                {/* <div>
                   <label
                     className="block text-sm font-medium mb-2"
                     style={{ color: theme.colors.text.secondary }}
@@ -630,11 +630,11 @@ const BookingDetailsContent: React.FC = () => {
                       border: `1px solid ${theme.colors.border.light}`,
                     }}
                   />
-                </div>
+                </div> */}
 
                 {/* Checkboxes */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3">
+                  {/* <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       id="whatsapp"
@@ -670,10 +670,10 @@ const BookingDetailsContent: React.FC = () => {
                     >
                       GST Details
                     </label>
-                  </div>
+                  </div> */}
 
                   {/* GST Input Field - Show only when GST checkbox is checked */}
-                  {formData.gstDetails && (
+                  {/* {formData.gstDetails && (
                     <div className="mt-3">
                       <label
                         className="block text-sm font-medium mb-2"
@@ -694,7 +694,7 @@ const BookingDetailsContent: React.FC = () => {
                         }}
                       />
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Status Message */}

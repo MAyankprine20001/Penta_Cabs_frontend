@@ -31,6 +31,9 @@ export interface EmailRequestData {
   time?: string;
   serviceType?: string;
   otherLocation?: string;
+  bookingId?: string;
+  paymentMethod?: string;
+  totalFare?: number;
 }
 
 // New types for booking requests
@@ -173,7 +176,10 @@ export const sendDeclineEmail = async (email: string, route: string, reason?: st
 export const prepareEmailData = (
   bookingData: Record<string, unknown>,
   formData: Record<string, unknown>,
-  serviceType: 'AIRPORT' | 'LOCAL' | 'OUTSTATION'
+  serviceType: 'AIRPORT' | 'LOCAL' | 'OUTSTATION',
+  bookingId?: string,
+  paymentMethod?: string,
+  totalFare?: string | number
 ): EmailRequestData => {
   const baseData = {
     email: formData.email as string,
@@ -214,6 +220,9 @@ export const prepareEmailData = (
         time: (bookingData.time as string) || (bookingData.pickupTime as string),
         serviceType: (bookingData.pickupDropType as string)?.toLowerCase() || 'drop',
         otherLocation: (bookingData.address as string) || '',
+        bookingId: bookingId,
+        paymentMethod: paymentMethod,
+        totalFare: typeof totalFare === 'string' ? parseInt(totalFare) : totalFare,
       };
 
     case 'LOCAL':
@@ -231,6 +240,9 @@ export const prepareEmailData = (
           pickupAddress: (formData.pickup as string) || (bookingData.pickupAddress as string) || '',
           dropAddress: (formData.drop as string) || (bookingData.dropAddress as string) || '',
         },
+        bookingId: bookingId,
+        paymentMethod: paymentMethod,
+        totalFare: typeof totalFare === 'string' ? parseInt(totalFare) : totalFare,
       };
 
     case 'OUTSTATION':
@@ -248,6 +260,9 @@ export const prepareEmailData = (
           pickup: (formData.pickup as string) || (bookingData.pickupAddress as string) || '',
           drop: (formData.drop as string) || (bookingData.dropAddress as string) || '',
         },
+        bookingId: bookingId,
+        paymentMethod: paymentMethod,
+        totalFare: typeof totalFare === 'string' ? parseInt(totalFare) : totalFare,
       };
 
     default:

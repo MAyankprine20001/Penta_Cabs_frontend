@@ -321,7 +321,10 @@ const CabBookingContent = () => {
             gstDetails: bookingData.gstDetails === "true",
             gst: bookingData.gst || "",
           },
-          bookingData.serviceType as "AIRPORT" | "LOCAL" | "OUTSTATION"
+          bookingData.serviceType as "AIRPORT" | "LOCAL" | "OUTSTATION",
+          bookingResponse.customBookingId,
+          selectedPayment,
+          bookingData.selectedCabPrice
         );
 
         console.log("Prepared email data:", emailData);
@@ -393,7 +396,10 @@ const CabBookingContent = () => {
             gstDetails: bookingData.gstDetails === "true",
             gst: bookingData.gst || "",
           },
-          bookingData.serviceType as "AIRPORT" | "LOCAL" | "OUTSTATION"
+          bookingData.serviceType as "AIRPORT" | "LOCAL" | "OUTSTATION",
+          bookingId,
+          selectedPayment,
+          bookingData.selectedCabPrice
         );
 
         // Send email based on service type

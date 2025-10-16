@@ -86,6 +86,7 @@ const CabBookingContent = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [isProcessingEmail, setIsProcessingEmail] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [bookingId, setBookingId] = useState<string>("");
 
   // Parse URL parameters for booking and cab data
   const searchParams = useSearchParams();
@@ -172,13 +173,24 @@ const CabBookingContent = () => {
           };
 
           try {
+            const verifyPayload = {
+              ...payload,
+              bookingData: bookingData,
+              selectedPayment: selectedPayment,
+              totalFare: getSelectedAmount(),
+            };
+
             const { data } = await axios.post(
               `${environment.baseUrl}/api/verify-payment`,
-              payload,
+              verifyPayload,
               { headers: { "Content-Type": "application/json" } }
             );
 
             if (data?.success) {
+              // Store the booking ID if available
+              if (data.customBookingId) {
+                setBookingId(data.customBookingId);
+              }
               // ✅ Reuse your existing email flow
               await handlePaymentSuccess();
             } else {
@@ -289,6 +301,11 @@ const CabBookingContent = () => {
         // Create the booking request
         const bookingResponse = await createBookingRequest(bookingRequestData);
         console.log("Booking request created:", bookingResponse);
+
+        // Store the booking ID for display
+        if (bookingResponse.customBookingId) {
+          setBookingId(bookingResponse.customBookingId);
+        }
 
         // Send email based on service type
         const emailData = prepareEmailData(
@@ -413,7 +430,7 @@ const CabBookingContent = () => {
   const handleConfirmModalOk = () => {
     setShowConfirmationModal(false);
     // Redirect to home page
-    router.push('/');
+    router.push("/");
   };
 
   return (
@@ -853,12 +870,20 @@ const CabBookingContent = () => {
               >
                 Your booking confirmation is done!
               </p>
+              {bookingId && (
+                <div className="mb-4 p-3 bg-gray-800 rounded-lg border border-yellow-400">
+                  <p className="text-sm text-gray-400 mb-1">Booking ID:</p>
+                  <p className="text-lg font-mono font-bold text-yellow-400">
+                    {bookingId}
+                  </p>
+                </div>
+              )}
               <p
                 className="text-sm"
                 style={{ color: theme.colors.text.secondary }}
               >
-                Payment of ₹{getSelectedAmount()} was successful. 
-                We have sent a confirmation email to your registered email address.
+                Payment of ₹{getSelectedAmount()} was successful. We have sent a
+                confirmation email to your registered email address.
               </p>
               <p
                 className="text-sm mt-2"

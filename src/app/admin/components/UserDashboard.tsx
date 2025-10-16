@@ -11,6 +11,7 @@ import {
 
 interface BookingRequest {
   _id: string;
+  bookingId: string;
   serviceType: "AIRPORT" | "LOCAL" | "OUTSTATION";
   traveller: {
     name: string;
@@ -569,6 +570,9 @@ Your driver will contact you soon for pickup.`;
             <table className="w-full min-w-full">
               <thead>
                 <tr className="bg-gradient-to-r from-gray-800 to-gray-900 border-b border-gray-700">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white font-semibold text-xs sm:text-sm">
+                    Booking ID
+                  </th>
                   <th className="px-3 sm:px-6 py-3 sm:py-4 text-left">
                     <button
                       onClick={() => handleSort("traveller.name")}
@@ -622,6 +626,11 @@ Your driver will contact you soon for pickup.`;
                       index % 2 === 0 ? "bg-gray-800" : "bg-gray-900"
                     }`}
                   >
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      <div className="text-yellow-400 font-mono font-semibold text-xs sm:text-sm">
+                        {request.bookingId || "N/A"}
+                      </div>
+                    </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <div>
                         <div className="font-semibold text-white text-xs sm:text-sm">

@@ -35,6 +35,7 @@ export interface EmailRequestData {
 
 // New types for booking requests
 export interface BookingRequestData {
+  bookingId?: string;
   serviceType: 'AIRPORT' | 'LOCAL' | 'OUTSTATION';
   traveller: {
     name: string;

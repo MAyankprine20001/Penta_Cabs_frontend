@@ -77,6 +77,31 @@ const UserOutstationRide = () => {
     setLoading(true);
 
     try {
+      // First, send inquiry email to admin
+      try {
+        await fetch(`${environment.baseUrl}/send-intercity-inquiry`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: formData.city1,
+            to: formData.city2,
+            tripType: formData.tripType,
+            departureDate: formData.date,
+            pickupTime: formData.time,
+            returnDate: formData.returnDate || "",
+            returnTime: formData.returnTime || "",
+            name: formData.name,
+            phoneNumber: formData.phoneNumber,
+          }),
+        });
+        console.log("Inquiry email sent to admin successfully");
+      } catch (emailErr) {
+        console.error("Failed to send inquiry email:", emailErr);
+        // Continue with the flow even if email fails
+      }
+
       // Make API call to get cab data
       const response = await outstationService.searchIntercityCabs({
         city1: formData.city1,

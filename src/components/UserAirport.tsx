@@ -54,6 +54,29 @@ const UserAirport = () => {
     setError("");
     setCabOptions([]);
     try {
+      // First, send inquiry email to admin
+      try {
+        await fetch(`${environment.baseUrl}/send-airport-inquiry`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            airportCity: formData.airportCity,
+            serviceType: formData.serviceType,
+            otherLocation: formData.otherLocation,
+            date: formData.date,
+            pickupTime: formData.time,
+            name: formData.name,
+            phoneNumber: formData.phoneNumber,
+          }),
+        });
+        console.log("Airport inquiry email sent to admin successfully");
+      } catch (emailErr) {
+        console.error("Failed to send airport inquiry email:", emailErr);
+        // Continue with the flow even if email fails
+      }
+
       const response = await axios.post(
         `${environment.baseUrl}/api/search-cabs-forairport`,
         formData

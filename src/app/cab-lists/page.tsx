@@ -5,6 +5,9 @@ import { useSearchParams } from "next/navigation";
 import type { Vehicle, VehicleType } from "@/types/index";
 import type { BookingFormData } from "@/types/booking";
 import { useRouter } from "next/navigation";
+import IntroductionSection from "@/components/IntroductionSection";
+import FeaturesSection from "@/components/FeaturesSection";
+import BenefitsSection from "@/components/BenefitsSection";
 
 // Theme configuration (matching HeroSection)
 const theme = {
@@ -747,6 +750,13 @@ const CabListsContent: React.FC = () => {
               Modify
             </button>
           </div>
+        </div>
+
+        {/* Introduction, Features, and Benefits Sections */}
+        <div className="relative z-10 mt-16">
+          <IntroductionSection />
+          <FeaturesSection />
+          <BenefitsSection />
         </div>
       </div>
 

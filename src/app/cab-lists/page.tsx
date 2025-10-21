@@ -74,7 +74,7 @@ const cabList: Vehicle[] = [
     features: ["AC"],
     pricePerKm: 12,
     basePrice: 7679,
-    images: ["/innova.png"],
+    images: ["/innova.jpg"],
     available: true,
     fuelType: "petrol",
     airConditioned: true,
@@ -88,7 +88,7 @@ const cabList: Vehicle[] = [
     features: ["AC"],
     pricePerKm: 15,
     basePrice: 8442,
-    images: ["/sendan.png"],
+    images: ["/sedan.jpg"],
     available: true,
     fuelType: "petrol",
     airConditioned: true,
@@ -102,7 +102,7 @@ const cabList: Vehicle[] = [
     features: ["AC"],
     pricePerKm: 18,
     basePrice: 10130,
-    images: ["/suv.png"],
+    images: ["/suv.jpg"],
     available: true,
     fuelType: "diesel",
     airConditioned: true,
@@ -116,7 +116,7 @@ const cabList: Vehicle[] = [
     features: ["AC"],
     pricePerKm: 25,
     basePrice: 19757,
-    images: ["/innovacrystal.png"],
+    images: ["/innovacrystal.jpg"],
     available: true,
     fuelType: "petrol",
     airConditioned: true,
@@ -186,11 +186,26 @@ const CabListsContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
+  // Helper function to get default image for cab type
+  const getDefaultImageForType = (cabType: string): string[] => {
+    const imageMap: { [key: string]: string } = {
+      sedan: "/sedan.jpg",
+      suv: "/suv.jpg",
+      innova: "/innova.jpg",
+      innovacrystal: "/innovacrystal.jpg",
+      crysta: "/innovacrystal.jpg",
+    };
+    return [imageMap[cabType] || "/sedan.jpg"];
+  };
+
   // Create dynamic cab list based on API data or fallback to default
   const getCabList = (): Vehicle[] => {
+    console.log("API Cabs length:", apiCabs.length);
+    console.log("API Cabs data:", apiCabs);
+
     if (apiCabs.length > 0) {
       // Map API cabs to Vehicle format
-      return apiCabs.map((apiCab, index) => ({
+      const mappedCabs = apiCabs.map((apiCab, index) => ({
         id: (index + 1).toString(),
         name: apiCab.type?.toUpperCase() || `CAB ${index + 1}`,
         type: (apiCab.type?.toLowerCase() || "sedan") as VehicleType,
@@ -198,7 +213,9 @@ const CabListsContent: React.FC = () => {
         features: apiCab.features || ["AC"],
         pricePerKm: apiCab.pricePerKm || 12,
         basePrice: apiCab.price || 5000,
-        images: apiCab.image ? [apiCab.image] : ["/sendan.png"],
+        images: apiCab.image
+          ? [apiCab.image]
+          : getDefaultImageForType(apiCab.type?.toLowerCase() || "sedan"),
         available: apiCab.available !== false,
         fuelType: (apiCab.fuelType || "petrol") as
           | "petrol"
@@ -209,13 +226,25 @@ const CabListsContent: React.FC = () => {
         airConditioned: apiCab.airConditioned !== false,
         luggage: apiCab.luggage || 2,
       }));
+      console.log("Using API cabs:", mappedCabs);
+      return mappedCabs;
     }
 
     // Fallback to default cab list
+    console.log("Using default cab list:", cabList);
     return cabList;
   };
 
   const dynamicCabList = getCabList();
+
+  // Debug: Log the cab list to see image paths
+  console.log(
+    "Dynamic Cab List:",
+    dynamicCabList.map((cab) => ({
+      name: cab.name,
+      images: cab.images,
+    }))
+  );
 
   // Helper function to format trip details based on booking data
   const formatTripDetails = () => {
@@ -472,7 +501,7 @@ const CabListsContent: React.FC = () => {
                     }}
                   >
                     <img
-                      src={cab.images[0]}
+                      src={`${cab.images[0]}?v=${Date.now()}`}
                       alt={cab.name}
                       className="w-full h-full object-contain rounded"
                       style={{
@@ -480,6 +509,18 @@ const CabListsContent: React.FC = () => {
                           selectedCab === cab.id
                             ? "brightness(1.1)"
                             : "brightness(0.9)",
+                      }}
+                      onError={(e) => {
+                        console.error(
+                          `Failed to load image: ${cab.images[0]}`,
+                          e
+                        );
+                        e.currentTarget.style.display = "none";
+                      }}
+                      onLoad={() => {
+                        console.log(
+                          `Successfully loaded image: ${cab.images[0]}`
+                        );
                       }}
                     />
                   </div>
@@ -556,12 +597,23 @@ const CabListsContent: React.FC = () => {
 
                       <div className="relative w-full h-full flex items-center justify-center">
                         <img
-                          src={cab.images[0]}
+                          src={`${cab.images[0]}?v=${Date.now()}`}
                           alt={cab.name}
                           className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
                           style={{
                             filter:
                               "drop-shadow(0 8px 25px rgba(255, 215, 0, 0.3))",
+                          }}
+                          onError={(e) => {
+                            console.error(
+                              `Failed to load large image: ${cab.images[0]}`,
+                              e
+                            );
+                          }}
+                          onLoad={() => {
+                            console.log(
+                              `Successfully loaded large image: ${cab.images[0]}`
+                            );
                           }}
                         />
                       </div>

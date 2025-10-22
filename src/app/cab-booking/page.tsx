@@ -242,6 +242,14 @@ const CabBookingContent = () => {
     const totalFare = parseInt(bookingData.selectedCabPrice || "0");
     const twentyPercent = Math.round(totalFare * 0.2);
 
+    // Calculate platform fee (2% of advance amount)
+    const platformFee20 = Math.round(twentyPercent * 0.02);
+    const platformFee100 = Math.round(totalFare * 0.02);
+
+    // Total amount including platform fee
+    const total20Percent = twentyPercent + platformFee20;
+    const total100Percent = totalFare + platformFee100;
+
     return [
       {
         id: "0",
@@ -249,20 +257,26 @@ const CabBookingContent = () => {
         subtitle: "Payment",
         description: "Pay Cash to driver",
         amount: 0,
+        platformFee: 0,
+        baseAmount: 0,
       },
       {
         id: "20",
         title: "20%",
         subtitle: "Advance",
-        description: `Pay Adv ₹ ${twentyPercent.toLocaleString()}`,
-        amount: twentyPercent,
+        description: `Pay Adv ₹ ${total20Percent.toLocaleString()} (₹${twentyPercent.toLocaleString()} + ₹${platformFee20} platform fee)`,
+        amount: total20Percent,
+        platformFee: platformFee20,
+        baseAmount: twentyPercent,
       },
       {
         id: "100",
         title: "100%",
         subtitle: "Advance",
-        description: `Pay Adv ₹ ${totalFare.toLocaleString()}`,
-        amount: totalFare,
+        description: `Pay Adv ₹ ${total100Percent.toLocaleString()} (₹${totalFare.toLocaleString()} + ₹${platformFee100} platform fee)`,
+        amount: total100Percent,
+        platformFee: platformFee100,
+        baseAmount: totalFare,
       },
     ];
   };

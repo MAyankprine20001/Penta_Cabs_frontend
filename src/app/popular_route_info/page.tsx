@@ -157,11 +157,6 @@ const PopularRouteInfo: React.FC = () => {
                   placeholder="Search routes..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      // Search is already handled by the onChange
-                    }
-                  }}
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
@@ -342,7 +337,7 @@ const PopularRouteInfo: React.FC = () => {
 
                       {/* Action Button */}
                       <Link
-                        href={`/routes/${route.id}`}
+                        href={`/routes/${route.description}/${route.id}`}
                         className="w-full inline-flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-2 px-4 rounded-lg transition-colors group"
                       >
                         View Details

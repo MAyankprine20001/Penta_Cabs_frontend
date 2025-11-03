@@ -21,8 +21,8 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
 
     // Simple authentication - in production, this should be handled by a backend
     // For demo purposes, using hardcoded credentials
-    const validUsername = "admin";
-    const validPassword = "admin123";
+    const validUsername = "ParthPentacab";
+    const validPassword = "Penta@2020";
 
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -146,7 +146,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
             {isLoading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-
+{/* 
         <div className="mt-6 text-center">
           <p 
             className="text-xs"
@@ -157,7 +157,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
           >
             Demo Credentials: admin / admin123
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

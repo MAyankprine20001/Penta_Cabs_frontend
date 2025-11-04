@@ -87,7 +87,7 @@ const PopularRouteInfo: React.FC = () => {
       }
     }, 100);
   };
- 
+
   // Handle booking button click
   const handleBookNowClick = () => {
     // If not on homepage, navigate first
@@ -112,7 +112,9 @@ const PopularRouteInfo: React.FC = () => {
       </div>
     );
   }
-  
+
+  console.log(filteredRoutes, "mayank");
+
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
@@ -324,7 +326,10 @@ const PopularRouteInfo: React.FC = () => {
 
                       {/* Action Button */}
                       <Link
-                        href={`/routes/${route.routeName}/${route.id}`}
+                        href={`/routes/${route.routeName?.replace(
+                          /\s+/g,
+                          "-"
+                        )}/${route.id}`}
                         className="w-full inline-flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-2 px-4 rounded-lg transition-colors group"
                       >
                         View Details

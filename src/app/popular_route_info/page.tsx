@@ -87,20 +87,7 @@ const PopularRouteInfo: React.FC = () => {
       }
     }, 100);
   };
-
-  // Handle call button click
-  const handleCallClick = () => {
-    window.location.href = "tel:+917600839900";
-  };
-
-  // Handle WhatsApp button click
-  const handleWhatsAppClick = () => {
-    const message = encodeURIComponent(
-      "Hi, I need information about cab booking for popular routes."
-    );
-    window.open(`https://wa.me/917600839900?text=${message}`, "_blank");
-  };
-
+ 
   // Handle booking button click
   const handleBookNowClick = () => {
     // If not on homepage, navigate first
@@ -125,7 +112,7 @@ const PopularRouteInfo: React.FC = () => {
       </div>
     );
   }
-
+  
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
@@ -337,7 +324,7 @@ const PopularRouteInfo: React.FC = () => {
 
                       {/* Action Button */}
                       <Link
-                        href={`/routes/${route.description}/${route.id}`}
+                        href={`/routes/${route.routeName}/${route.id}`}
                         className="w-full inline-flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-2 px-4 rounded-lg transition-colors group"
                       >
                         View Details

@@ -4,9 +4,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { environment } from "@/config/environment";
-import { BsCarFront, BsClock } from "react-icons/bs";
-import { FaSearch, FaArrowRight, FaTag } from "react-icons/fa";
-import { theme } from "@/styles/theme";
+import { FaSearch, FaArrowRight } from "react-icons/fa";
 
 interface Route {
   id: string;
@@ -28,7 +26,6 @@ const PopularRouteInfo: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
-  const [allTags, setAllTags] = useState<string[]>([]);
 
   useEffect(() => {
     fetchRoutes();
@@ -44,11 +41,6 @@ const PopularRouteInfo: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         setRoutes(data.data || []);
-        // Extract unique tags
-        const tags = [
-          ...new Set(data.data?.flatMap((route: Route) => route.tags) || []),
-        ];
-        setAllTags(tags);
       }
     } catch (error) {
       console.error("Error fetching routes:", error);
@@ -66,14 +58,6 @@ const PopularRouteInfo: React.FC = () => {
     const matchesTag = !selectedTag || route.tags.includes(selectedTag);
     return matchesSearch && matchesTag;
   });
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   // Function to scroll to booking widget
   const scrollToBookingWidget = () => {
@@ -136,9 +120,9 @@ const PopularRouteInfo: React.FC = () => {
       {/* Search and Filter Section */}
       <div className="bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
+          <div className="flex justify-center">
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-md flex gap-2">
+            <div className="relative flex gap-2 w-full max-w-md">
               <div className="relative flex-1">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
@@ -163,7 +147,7 @@ const PopularRouteInfo: React.FC = () => {
             </div>
 
             {/* Tag Filter */}
-            <div className="flex flex-wrap gap-2">
+            {/* <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedTag("")}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -187,7 +171,7 @@ const PopularRouteInfo: React.FC = () => {
                   #{tag}
                 </button>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -218,120 +202,30 @@ const PopularRouteInfo: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredRoutes.map((route) => (
-                  <article
+                  <Link
                     key={route.id}
-                    className="bg-gray-900 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 group"
+                    href={`/routes/${route.routeName?.replace(/\s+/g, "-")}/${
+                      route.id
+                    }`}
+                    className="block"
                   >
-                    {/* Route Featured Image */}
-                    {(() => {
-                      // Extract first image from route description
-                      const imgMatch = route.description.match(
-                        /<img[^>]+src="([^"]+)"[^>]*>/i
-                      );
-                      const imageUrl = imgMatch ? imgMatch[1] : null;
+                    <article className="bg-gray-900 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 group cursor-pointer">
+                      <div className="p-6">
+                        {/* Title */}
+                        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-yellow-400 transition-colors line-clamp-2">
+                          {route.routeName}
+                        </h3>
 
-                      return imageUrl ? (
-                        <div className="h-48 overflow-hidden">
-                          <img
-                            src={imageUrl}
-                            alt={route.routeName}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            onError={(e) => {
-                              // Fallback to placeholder if image fails to load
-                              e.currentTarget.style.display = "none";
-                              e.currentTarget.nextElementSibling.style.display =
-                                "flex";
-                              e.currentTarget.nextElementSibling.classList.add(
-                                "flex"
-                              );
-                              e.currentTarget.nextElementSibling.classList.remove(
-                                "hidden"
-                              );
-                            }}
-                          />
-                          <div className="h-48 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 items-center justify-center hidden">
-                            <div className="text-center text-gray-400">
-                              <div className="w-16 h-16 mx-auto mb-2 bg-gray-700 rounded-lg flex items-center justify-center">
-                                <span className="text-2xl">🚗</span>
-                              </div>
-                              <p className="text-sm">Route</p>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-48 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 flex items-center justify-center">
-                          <div className="text-center text-gray-400">
-                            <div className="w-16 h-16 mx-auto mb-2 bg-gray-700 rounded-lg flex items-center justify-center">
-                              <span className="text-2xl">🚗</span>
-                            </div>
-                            <p className="text-sm">Route</p>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                    <div className="p-6">
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {route.tags.slice(0, 2).map((tag, index) => (
-                          <span
-                            key={index}
-                            className="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-medium rounded-full"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                        {route.tags.length > 2 && (
-                          <span className="px-3 py-1 bg-gray-700 text-gray-400 text-xs font-medium rounded-full">
-                            +{route.tags.length - 2}
-                          </span>
-                        )}
+                        {/* Excerpt */}
+                        <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+                          {route.description
+                            .replace(/<[^>]*>/g, "")
+                            .substring(0, 90)}
+                          ...
+                        </p>
                       </div>
-
-                      {/* Title */}
-                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-yellow-400 transition-colors line-clamp-2">
-                        {route.routeName}
-                      </h3>
-
-                      {/* Route Info */}
-                      <div className="flex items-center gap-2 mb-3 text-gray-400">
-                        <BsCarFront className="w-4 h-4" />
-                        <span className="text-sm">
-                          {route.from} → {route.to}
-                        </span>
-                      </div>
-
-                      {/* Excerpt */}
-                      <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                        {route.description
-                          .replace(/<[^>]*>/g, "")
-                          .substring(0, 120)}
-                        ...
-                      </p>
-
-                      {/* Meta Info */}
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                        <div className="flex items-center gap-1">
-                          <BsClock className="w-3 h-3" />
-                          <span>
-                            Last booking: {formatDate(route.lastBooking)}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Action Button */}
-                      <Link
-                        href={`/routes/${route.routeName?.replace(
-                          /\s+/g,
-                          "-"
-                        )}/${route.id}`}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-2 px-4 rounded-lg transition-colors group"
-                      >
-                        View Details
-                        <FaArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    </div>
-                  </article>
+                    </article>
+                  </Link>
                 ))}
               </div>
             </>

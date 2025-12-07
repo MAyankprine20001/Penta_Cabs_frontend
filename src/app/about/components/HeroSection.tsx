@@ -99,7 +99,7 @@ export const HeroSection: React.FC = () => {
                 style={{ color: theme.colors.accent.gold }}
               />
               <span style={{ color: theme.colors.text.secondary }}>
-                +91 98765 43210
+                +91 7600839900
               </span>
             </div>
           </div>

@@ -29,8 +29,9 @@ export const AddressSection: React.FC = () => {
             className="text-lg mb-4 leading-relaxed max-w-2xl mx-auto"
             style={{ color: theme.colors.text.secondary }}
           >
-            A-1102 Kautilya 99, Nr. Taragad Underbridge, Vaishnodevi Circle S P
-            Ring Road Tragad, Ahmedabad City, Ahmedabad, Gujarat, 382470
+            Shop no 2, Penta cab Taxi service, Khodiyar nagar society Opp avsar
+            party plote Behind hansol gaun Hansol airport road Sardarnagar
+            Ahmedabad
           </p>
           <p
             className="font-medium"

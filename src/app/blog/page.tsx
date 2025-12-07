@@ -3,13 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { environment } from "@/config/environment";
-import {
-  FaCalendarAlt,
-  FaUser,
-  FaTag,
-  FaSearch,
-  FaArrowRight,
-} from "react-icons/fa";
+import { FaCalendarAlt, FaUser, FaSearch, FaArrowRight } from "react-icons/fa";
 
 interface BlogPost {
   id: string;
@@ -26,8 +20,7 @@ export default function BlogPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTag, setSelectedTag] = useState("");
-  const [allTags, setAllTags] = useState<string[]>([]);
+  const [selectedTag] = useState("");
 
   useEffect(() => {
     fetchBlogs();
@@ -43,11 +36,6 @@ export default function BlogPage() {
       const data = await response.json();
       if (data.success) {
         setBlogs(data.data || []);
-        // Extract unique tags
-        const tags = [
-          ...new Set(data.data?.flatMap((blog: BlogPost) => blog.tags) || []),
-        ];
-        setAllTags(tags);
       }
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -105,9 +93,9 @@ export default function BlogPage() {
       {/* Search and Filter Section */}
       <div className="bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
+          <div className="flex justify-center">
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative w-full max-w-md">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
@@ -119,7 +107,7 @@ export default function BlogPage() {
             </div>
 
             {/* Tag Filter */}
-            <div className="flex flex-wrap gap-2">
+            {/* <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedTag("")}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -143,7 +131,7 @@ export default function BlogPage() {
                   #{tag}
                 </button>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -196,15 +184,15 @@ export default function BlogPage() {
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             onError={(e) => {
                               // Fallback to placeholder if image fails to load
-                              e.currentTarget.style.display = "none";
-                              e.currentTarget.nextElementSibling.style.display =
-                                "flex";
-                              e.currentTarget.nextElementSibling.classList.add(
-                                "flex"
-                              );
-                              e.currentTarget.nextElementSibling.classList.remove(
-                                "hidden"
-                              );
+                              const target = e.currentTarget;
+                              target.style.display = "none";
+                              const nextSibling =
+                                target.nextElementSibling as HTMLElement;
+                              if (nextSibling) {
+                                nextSibling.style.display = "flex";
+                                nextSibling.classList.add("flex");
+                                nextSibling.classList.remove("hidden");
+                              }
                             }}
                           />
                           <div className="h-48 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 items-center justify-center hidden">

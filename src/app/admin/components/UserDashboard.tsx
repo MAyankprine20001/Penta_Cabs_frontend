@@ -875,7 +875,7 @@ Your driver will contact you soon for pickup.`;
                     }));
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm sm:text-base"
-                  placeholder="Enter WhatsApp number (e.g., +91 98765 43210)"
+                  placeholder="Enter WhatsApp number (e.g., +91 7600839900)"
                   maxLength={15}
                   pattern="[0-9+\-\s]+"
                 />

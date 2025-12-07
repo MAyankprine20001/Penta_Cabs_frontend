@@ -834,7 +834,7 @@ const BookingDetailsContent: React.FC = () => {
               "Your safety is our top priority. All our vehicles undergo regular maintenance and adhere to strict safety standards.",
               "We believe in transparency, and our pricing reflects that. You'll always know what you're paying for, with no hidden charges or surprises.",
               "To know more about Terms and Conditions you can read your cancellation policy and refund policy. We are available for you 24/7, with the best service in the travel marketplace.",
-              "Our Email Address info@pentacab.com",
+              "Our Email Address info.pentacab@gmail.com",
               "Our Contact Number 7600839900",
             ].map((guideline, index) => (
               <div key={index} className="flex items-start gap-3">

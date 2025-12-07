@@ -625,7 +625,6 @@ const CabListsContent: React.FC = () => {
                     {[
                       { icon: "✓", text: "Verified Driver" },
                       { icon: "🕐", text: "On Time Cab" },
-                      { icon: "📄", text: "GST Invoice" },
                       { icon: "🔒", text: "No Hidden Charges" },
                     ].map((feature, index) => (
                       <div
@@ -652,6 +651,33 @@ const CabListsContent: React.FC = () => {
                         </span>
                       </div>
                     ))}
+
+                    {/* Additional Information */}
+                    <div
+                      className="mt-6 space-y-2 pt-4 border-t"
+                      style={{ borderColor: theme.colors.border.light }}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span
+                          style={{
+                            color: theme.colors.text.muted,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          ℹ️ Parking charges will be extra if applicable.
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span
+                          style={{
+                            color: theme.colors.text.muted,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          ℹ️ Toll tax is included in one-way drop.
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Pricing Section */}

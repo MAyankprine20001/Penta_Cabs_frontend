@@ -939,11 +939,11 @@ const CabBookingContent = () => {
                   >
                     ✉️ Email:{" "}
                     <a
-                      href="mailto:info@pentacab.com"
+                      href="mailto:info.pentacab@gmail.com"
                       className="underline"
                       style={{ color: theme.colors.accent.gold }}
                     >
-                      info@pentacab.com
+                      info.pentacab@gmail.com
                     </a>
                   </p>
                 </div>

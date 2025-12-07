@@ -227,7 +227,7 @@ const Footer: React.FC = () => {
                     fontFamily: theme.typography.fontFamily.sans.join(", "),
                   }}
                 >
-                  info@pentacab.com
+                  info.pentacab@gmail.com
                 </span>
               </a>
 

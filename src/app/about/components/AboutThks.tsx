@@ -138,10 +138,10 @@ export const AboutThks: React.FC = () => {
                     text: "Ahmedabad, Gujarat",
                     color: "#FFD700",
                   },
-                  { icon: FaPhone, text: "+91 98765 43210", color: "#FFA500" },
+                  { icon: FaPhone, text: "+91 7600839900", color: "#FFA500" },
                   {
                     icon: FaEnvelope,
-                    text: "info@pentacab.com",
+                    text: "info.pentacab@gmail.com",
                     color: "#20B2AA",
                   },
                   {

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import IntroductionSection from "@/components/IntroductionSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import BenefitsSection from "@/components/BenefitsSection";
+import api from "@/config/axios";
 
 // Theme configuration (matching HeroSection)
 const theme = {
@@ -186,6 +187,41 @@ const CabListsContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
+  // Fetch distance from API if not available and it's an OUTSTATION trip
+  useEffect(() => {
+    const fetchDistanceFromAPI = async () => {
+      if (!bookingData || apiDistance !== null) return;
+
+      // Only fetch for OUTSTATION trips
+      if (
+        bookingData.serviceType === "OUTSTATION" &&
+        bookingData.from &&
+        bookingData.to
+      ) {
+        try {
+          // Map tripType to API format
+          const tripType =
+            bookingData.tripType === "ROUNDWAY" ? "two-way" : "one-way";
+
+          const response = await api.post("/api/intercity/search", {
+            city1: bookingData.from,
+            city2: bookingData.to,
+            tripType: tripType,
+          });
+
+          if (response.data && response.data.distance) {
+            setApiDistance(response.data.distance);
+          }
+        } catch (error) {
+          console.error("Error fetching distance from API:", error);
+          // Keep using fallback distance calculation
+        }
+      }
+    };
+
+    fetchDistanceFromAPI();
+  }, [bookingData, apiDistance]);
+
   // Helper function to get default image for cab type
   const getDefaultImageForType = (cabType: string): string[] => {
     const imageMap: { [key: string]: string } = {
@@ -283,11 +319,16 @@ const CabListsContent: React.FC = () => {
     return `${tripTypeText} | ${tripText} | On ${date} at ${displayTime}`;
   };
 
-  // Calculate distance (mock calculation - you should replace with actual logic)
+  // Calculate distance - use API distance if available, otherwise fallback to defaults
   const calculateDistance = () => {
     if (!bookingData) return "0";
 
-    // Mock distance calculation based on service type
+    // Use API distance if available (from admin data)
+    if (apiDistance !== null) {
+      return apiDistance.toString();
+    }
+
+    // Fallback to default distances if API distance is not available
     if (bookingData.serviceType === "AIRPORT") return "45";
     if (bookingData.serviceType === "OUTSTATION") return "535";
     if (bookingData.serviceType === "LOCAL") return "100";

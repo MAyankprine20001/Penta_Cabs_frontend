@@ -187,11 +187,6 @@ const PopularRouteInfo: React.FC = () => {
                   #{tag}
                 </button>
               ))}
-              {allTags.length > 5 && (
-                <span className="px-3 py-2 text-gray-500 text-sm">
-                  +{allTags.length - 5} more
-                </span>
-              )}
             </div>
           </div>
         </div>

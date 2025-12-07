@@ -912,6 +912,42 @@ const CabBookingContent = () => {
               >
                 Our team will contact you shortly with driver details.
               </p>
+              <div className="mt-4 pt-4 border-t border-gray-700">
+                <p
+                  className="text-sm mb-2"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  For any queries, please contact us:
+                </p>
+                <div className="flex flex-col gap-1">
+                  <p
+                    className="text-sm"
+                    style={{ color: theme.colors.text.primary }}
+                  >
+                    📞 Phone:{" "}
+                    <a
+                      href="tel:7600839900"
+                      className="underline"
+                      style={{ color: theme.colors.accent.gold }}
+                    >
+                      7600839900
+                    </a>
+                  </p>
+                  <p
+                    className="text-sm"
+                    style={{ color: theme.colors.text.primary }}
+                  >
+                    ✉️ Email:{" "}
+                    <a
+                      href="mailto:info@pentacab.com"
+                      className="underline"
+                      style={{ color: theme.colors.accent.gold }}
+                    >
+                      info@pentacab.com
+                    </a>
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* OK Button */}

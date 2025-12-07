@@ -187,6 +187,7 @@ const CabBookingContent = () => {
             );
 
             if (data?.success) {
+              console.log("data we have", data);
               // Store the booking ID if available
               if (data.customBookingId) {
                 setBookingId(data.customBookingId);

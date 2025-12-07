@@ -648,9 +648,11 @@ Your driver will contact you soon for pickup.`;
                       <div className="text-white text-xs sm:text-sm">
                         {request.serviceType || "N/A"}
                       </div>
-                      <div className="text-xs text-gray-400">
-                        {request.cab.type || "N/A"}
-                      </div>
+                      {request.cab.type && (
+                        <div className="text-xs text-gray-400">
+                          {request.cab.type}
+                        </div>
+                      )}
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <div className="text-white text-xs sm:text-sm font-medium">

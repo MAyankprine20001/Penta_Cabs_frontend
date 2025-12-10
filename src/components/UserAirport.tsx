@@ -10,6 +10,7 @@ import { ThemedDatePicker } from "@/components/UI/ThemedDatePicker";
 import { ThemedTimePicker } from "@/components/UI/ThemedTimePicker";
 import { ThemedButton } from "@/components/UI/ThemedButton";
 import { TabGroup } from "@/components/UI/TabGroup";
+import { ContactInfo } from "@/components/ContactInfo";
 
 const UserAirport = () => {
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ const UserAirport = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [showContactInfo, setShowContactInfo] = useState(false);
 
   useEffect(() => {
     axios
@@ -54,6 +56,36 @@ const UserAirport = () => {
     setError("");
     setCabOptions([]);
     try {
+      // Check if "Other" is selected
+      if (formData.airportCity === "Other") {
+        // Send email to admin about unavailable service
+        try {
+          await fetch(`${environment.baseUrl}/send-other-airport-inquiry`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              airportCity: formData.airportCity,
+              serviceType: formData.serviceType,
+              otherLocation: formData.otherLocation,
+              date: formData.date,
+              pickupTime: formData.time,
+              name: formData.name,
+              phoneNumber: formData.phoneNumber,
+            }),
+          });
+          console.log("Other service inquiry email sent to admin successfully");
+        } catch (emailErr) {
+          console.error("Failed to send other service inquiry email:", emailErr);
+        }
+        
+        // Show contact info page
+        setShowContactInfo(true);
+        setLoading(false);
+        return;
+      }
+
       // First, send inquiry email to admin
       try {
         await fetch(`${environment.baseUrl}/send-airport-inquiry`, {
@@ -160,6 +192,21 @@ const UserAirport = () => {
 
   const otherLocs = getOtherLocations();
 
+  if (showContactInfo) {
+    return (
+      <ContactInfo
+        serviceType="AIRPORT"
+        searchDetails={{
+          airport: formData.airportCity,
+          date: formData.date,
+          time: formData.time,
+          name: formData.name,
+          phoneNumber: formData.phoneNumber,
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6 px-3 sm:px-0 max-w-md mx-auto sm:max-w-none">
       {/* Header Section */}
@@ -202,10 +249,10 @@ const UserAirport = () => {
             <ThemedSelect
               value={formData.airportCity}
               onChange={(e) => handleChange("airportCity", e.target.value)}
-              options={airportsData.map((airport: any) => ({
+              options={[...airportsData.map((airport: any) => ({
                 value: airport.airportCity,
                 label: airport.airportCity,
-              }))}
+              })), { value: "Other", label: "Other" }]}
               placeholder="Select Airport City"
             />
           </div>

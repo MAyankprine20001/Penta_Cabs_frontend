@@ -146,7 +146,7 @@ export const OutstationForm: React.FC<OutstationFormProps> = ({
                 onInputChange("to", "");
               }
             }}
-            options={fromCities}
+            options={[...fromCities, "Other"]}
             placeholder={
               isLoadingCities ? "Loading cities..." : "Select Departure City"
             }
@@ -176,7 +176,7 @@ export const OutstationForm: React.FC<OutstationFormProps> = ({
           <ThemedSelect
             value={bookingData.to}
             onChange={(e) => onInputChange("to", e.target.value)}
-            options={getToCities()}
+            options={[...getToCities(), "Other"]}
             placeholder={
               !bookingData.from
                 ? "Select departure city first"

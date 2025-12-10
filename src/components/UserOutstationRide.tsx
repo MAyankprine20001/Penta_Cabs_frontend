@@ -11,6 +11,7 @@ import { ThemedButton } from "@/components/UI/ThemedButton";
 import { TabGroup } from "@/components/UI/TabGroup";
 import { BsCarFront, BsArrowRepeat } from "react-icons/bs";
 import { outstationService } from "@/services/outstationService";
+import { ContactInfo } from "@/components/ContactInfo";
 
 const UserOutstationRide = () => {
   const [formData, setFormData] = useState({
@@ -42,6 +43,7 @@ const UserOutstationRide = () => {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showContactInfo, setShowContactInfo] = useState(false);
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -77,6 +79,38 @@ const UserOutstationRide = () => {
     setLoading(true);
 
     try {
+      // Check if "Other" is selected
+      if (formData.city1 === "Other" || formData.city2 === "Other") {
+        // Send email to admin about unavailable service
+        try {
+          await fetch(`${environment.baseUrl}/send-other-outstation-inquiry`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: formData.city1,
+              to: formData.city2,
+              tripType: formData.tripType,
+              departureDate: formData.date,
+              pickupTime: formData.time,
+              returnDate: formData.returnDate || "",
+              returnTime: formData.returnTime || "",
+              name: formData.name,
+              phoneNumber: formData.phoneNumber,
+            }),
+          });
+          console.log("Other service inquiry email sent to admin successfully");
+        } catch (emailErr) {
+          console.error("Failed to send other service inquiry email:", emailErr);
+        }
+        
+        // Show contact info page
+        setShowContactInfo(true);
+        setLoading(false);
+        return;
+      }
+
       // First, send inquiry email to admin
       try {
         await fetch(`${environment.baseUrl}/send-intercity-inquiry`, {
@@ -182,6 +216,22 @@ const UserOutstationRide = () => {
 
   const toCities = cityMap[formData.city1] || [];
 
+  if (showContactInfo) {
+    return (
+      <ContactInfo
+        serviceType="OUTSTATION"
+        searchDetails={{
+          from: formData.city1,
+          to: formData.city2,
+          date: formData.date,
+          time: formData.time,
+          name: formData.name,
+          phoneNumber: formData.phoneNumber,
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6 px-3 sm:px-0 max-w-md mx-auto sm:max-w-none">
       {/* Header Section */}
@@ -225,10 +275,10 @@ const UserOutstationRide = () => {
               <ThemedSelect
                 value={formData.city1}
                 onChange={(e) => handleChange("city1", e.target.value)}
-                options={fromCities.map((city: string) => ({
+                options={[...fromCities.map((city: string) => ({
                   value: city,
                   label: city,
-                }))}
+                })), { value: "Other", label: "Other" }]}
                 placeholder="Select Departure City"
               />
             </div>
@@ -247,10 +297,10 @@ const UserOutstationRide = () => {
               <ThemedSelect
                 value={formData.city2}
                 onChange={(e) => handleChange("city2", e.target.value)}
-                options={toCities.map((city: string) => ({
+                options={[...toCities.map((city: string) => ({
                   value: city,
                   label: city,
-                }))}
+                })), { value: "Other", label: "Other" }]}
                 placeholder={
                   !formData.city1
                     ? "Select departure city first"

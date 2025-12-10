@@ -51,7 +51,7 @@ export const LocalForm: React.FC<LocalFormProps> = ({
       <ThemedSelect
         value={bookingData.city}
         onChange={(e) => onInputChange("city", e.target.value)}
-        options={CITIES}
+        options={[...CITIES, "Other"]}
         placeholder="Select City"
         error={errors.city}
       />

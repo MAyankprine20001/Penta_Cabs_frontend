@@ -66,7 +66,7 @@ export const AirportForm: React.FC<AirportFormProps> = ({
         <ThemedSelect
           value={bookingData.airport}
           onChange={(e) => onInputChange("airport", e.target.value)}
-          options={AIRPORTS}
+          options={[...AIRPORTS, "Other"]}
           placeholder="Select Airport or City"
           error={errors.airport}
         />

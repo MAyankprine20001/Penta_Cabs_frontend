@@ -9,6 +9,7 @@ import { ThemedInput } from "@/components/UI/ThemedInput";
 import { ThemedDatePicker } from "@/components/UI/ThemedDatePicker";
 import { ThemedTimePicker } from "@/components/UI/ThemedTimePicker";
 import { ThemedButton } from "@/components/UI/ThemedButton";
+import { ContactInfo } from "@/components/ContactInfo";
 
 const UserLocalRide = () => {
   const [cities, setCities] = useState([]);
@@ -24,6 +25,7 @@ const UserLocalRide = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
+  const [showContactInfo, setShowContactInfo] = useState(false);
   const [travellerInfo, setTravellerInfo] = useState({
     name: "",
     mobile: "",
@@ -44,6 +46,35 @@ const UserLocalRide = () => {
     setLoading(true);
 
     try {
+      // Check if "Other" is selected
+      if (formData.city === "Other") {
+        // Send email to admin about unavailable service
+        try {
+          await fetch(`${environment.baseUrl}/send-other-local-inquiry`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              city: formData.city,
+              package: formData.package,
+              date: formData.date,
+              pickupTime: formData.time,
+              name: formData.name,
+              phoneNumber: formData.phoneNumber,
+            }),
+          });
+          console.log("Other service inquiry email sent to admin successfully");
+        } catch (emailErr) {
+          console.error("Failed to send other service inquiry email:", emailErr);
+        }
+        
+        // Show contact info page
+        setShowContactInfo(true);
+        setLoading(false);
+        return;
+      }
+
       // First, send inquiry email to admin
       try {
         await fetch(`${environment.baseUrl}/send-local-inquiry`, {
@@ -148,6 +179,22 @@ const UserLocalRide = () => {
     }
   };
 
+  if (showContactInfo) {
+    return (
+      <ContactInfo
+        serviceType="LOCAL"
+        searchDetails={{
+          city: formData.city,
+          package: formData.package,
+          date: formData.date,
+          time: formData.time,
+          name: formData.name,
+          phoneNumber: formData.phoneNumber,
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6 px-3 sm:px-0 max-w-md mx-auto sm:max-w-none">
       {/* Header Section */}
@@ -181,10 +228,10 @@ const UserLocalRide = () => {
             <ThemedSelect
               value={formData.city}
               onChange={(e) => handleChange("city", e.target.value)}
-              options={cities.map((city: string) => ({
+              options={[...cities.map((city: string) => ({
                 value: city,
                 label: city,
-              }))}
+              })), { value: "Other", label: "Other" }]}
               placeholder="Select City"
             />
           </div>

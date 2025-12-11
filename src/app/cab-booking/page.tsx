@@ -14,6 +14,7 @@ import {
 } from "@/services/emailService";
 import axios from "axios";
 import { on } from "events";
+import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
 // Theme configuration (matching cab-lists)
 const theme = {
@@ -914,38 +915,50 @@ const CabBookingContent = () => {
               </p>
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <p
-                  className="text-sm mb-2"
+                  className="text-sm mb-2 text-center"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   For any queries, please contact us:
                 </p>
-                <div className="flex flex-col gap-1">
-                  <p
-                    className="text-sm"
-                    style={{ color: theme.colors.text.primary }}
-                  >
-                    📞 Phone:{" "}
-                    <a
-                      href="tel:7600839900"
-                      className="underline"
-                      style={{ color: theme.colors.accent.gold }}
+                <div className="flex flex-col gap-2 items-center">
+                  <div className="flex items-center gap-2 justify-center">
+                    <FaWhatsapp
+                      className="text-white"
+                      style={{ fontSize: "18px", flexShrink: 0 }}
+                    />
+                    <p
+                      className="text-sm"
+                      style={{ color: theme.colors.text.primary }}
                     >
-                      +91 7600839900
-                    </a>
-                  </p>
-                  <p
-                    className="text-sm"
-                    style={{ color: theme.colors.text.primary }}
-                  >
-                    ✉️ Email:{" "}
-                    <a
-                      href="mailto:info.pentacab@gmail.com"
-                      className="underline"
-                      style={{ color: theme.colors.accent.gold }}
+                      Phone:{" "}
+                      <a
+                        href="tel:7600839900"
+                        className="underline"
+                        style={{ color: theme.colors.accent.gold }}
+                      >
+                        +91 7600839900
+                      </a>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 justify-center">
+                    <FaEnvelope
+                      className="text-white"
+                      style={{ fontSize: "18px", flexShrink: 0 }}
+                    />
+                    <p
+                      className="text-sm"
+                      style={{ color: theme.colors.text.primary }}
                     >
-                      info.pentacab@gmail.com
-                    </a>
-                  </p>
+                      Email:{" "}
+                      <a
+                        href="mailto:info.pentacab@gmail.com"
+                        className="underline"
+                        style={{ color: theme.colors.accent.gold }}
+                      >
+                        info.pentacab@gmail.com
+                      </a>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

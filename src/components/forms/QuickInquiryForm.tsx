@@ -57,7 +57,7 @@ export const QuickInquiryForm: React.FC<QuickInquiryFormProps> = ({
           e.currentTarget.style.color = theme.colors.accent.gold;
         }}
       >
-        📞 7600839900
+        📞 +91 7600839900
       </a>
     </div>
 

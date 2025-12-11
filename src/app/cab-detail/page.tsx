@@ -837,7 +837,7 @@ const BookingDetailsContent: React.FC = () => {
               "We believe in transparency, and our pricing reflects that. You'll always know what you're paying for, with no hidden charges or surprises.",
               "To know more about Terms and Conditions you can read your cancellation policy and refund policy. We are available for you 24/7, with the best service in the travel marketplace.",
               "Our Email Address info.pentacab@gmail.com",
-              "Our Contact Number 7600839900",
+              "Our Contact Number +91 7600839900",
             ].map((guideline, index) => (
               <div key={index} className="flex items-start gap-3">
                 <div

@@ -343,7 +343,7 @@ const BookingConfirmationPage = () => {
                     style={{ color: theme.colors.text.muted }}
                   >
                     <span>📞</span>
-                    <span>Support: 7600839900</span>
+                    <span>Support: +91 7600839900</span>
                   </div>
                 </div>
               </div>

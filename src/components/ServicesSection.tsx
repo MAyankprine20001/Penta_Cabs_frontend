@@ -409,7 +409,7 @@ const ServicesSection: React.FC = () => {
                     e.currentTarget.style.color = theme.colors.accent.gold;
                   }}
                 >
-                  7600839900
+                  +91 7600839900
                 </a>
               </p>
             </div>

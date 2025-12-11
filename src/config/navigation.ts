@@ -93,7 +93,7 @@ export const navigationItems: NavItem[] = [
 
 export const contactInfo = {
   phone: '7600839900',
-  phoneFormatted: '+91 760 083 9900',
+  phoneFormatted: '+91 7600839900',
   email: 'Info.pentacab@gmail.com',
   whatsapp: '7600839900',
   

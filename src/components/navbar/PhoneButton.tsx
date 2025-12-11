@@ -102,7 +102,7 @@ const PhoneButton: React.FC<PhoneButtonProps> = ({
             {/* Pulse ring */}
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-75" />
           </div>
-          <span className="font-bold">{contactInfo.phone}</span>
+          <span className="font-bold">{contactInfo.phoneFormatted}</span>
         </div>
 
         {/* Click ripple effect */}

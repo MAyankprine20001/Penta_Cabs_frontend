@@ -189,7 +189,7 @@ const Footer: React.FC = () => {
                     fontWeight: theme.typography.fontWeight.medium,
                   }}
                 >
-                  {contactInfo.phone}
+                  {contactInfo.phoneFormatted}
                 </span>
               </a>
 

@@ -23,7 +23,7 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
   serviceType,
   searchDetails,
 }) => {
-  const phoneNumber = "7600839900";
+  const phoneNumber = "+91 7600839900";
   const email = "info.pentacab@gmail.com";
 
   const getServiceName = () => {

@@ -41,7 +41,7 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
 
   return (
     <div
-      className="p-6 sm:p-8 rounded-lg border space-y-6"
+      className="p-4 sm:p-6 md:p-8 rounded-lg border space-y-4 sm:space-y-6 w-full max-w-full overflow-hidden"
       style={{
         backgroundColor: theme.colors.background.card,
         borderColor: theme.colors.border.goldLight,
@@ -160,8 +160,8 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
         <div className="space-y-3">
           {/* Phone Number */}
           <a
-            href={`tel:${phoneNumber}`}
-            className="flex items-center justify-center gap-3 p-4 rounded-lg border transition-all hover:scale-105"
+            href="tel:917600839900"
+            className="flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border transition-all hover:scale-105 w-full"
             style={{
               backgroundColor: theme.colors.background.secondary,
               borderColor: theme.colors.border.goldLight,
@@ -169,11 +169,11 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
             }}
           >
             <FaPhone
-              className="w-5 h-5"
+              className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
               style={{ color: theme.colors.accent.gold }}
             />
             <span
-              className="text-lg font-semibold"
+              className="text-sm sm:text-lg font-semibold break-words text-center"
               style={{
                 fontFamily: theme.typography.fontFamily.sans.join(", "),
               }}
@@ -185,7 +185,7 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
           {/* Email */}
           <a
             href={`mailto:${email}`}
-            className="flex items-center justify-center gap-3 p-4 rounded-lg border transition-all hover:scale-105"
+            className="flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border transition-all hover:scale-105 w-full"
             style={{
               backgroundColor: theme.colors.background.secondary,
               borderColor: theme.colors.border.goldLight,
@@ -193,13 +193,15 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
             }}
           >
             <FaEnvelope
-              className="w-5 h-5"
+              className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
               style={{ color: theme.colors.accent.gold }}
             />
             <span
-              className="text-lg font-semibold"
+              className="text-xs sm:text-base md:text-lg font-semibold break-words text-center"
               style={{
                 fontFamily: theme.typography.fontFamily.sans.join(", "),
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
               }}
             >
               {email}

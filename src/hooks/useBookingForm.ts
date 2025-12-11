@@ -6,6 +6,26 @@ import { useState } from 'react';
 import { BookingFormData, ServiceType, TripType, PickupDropType } from '@/types/booking';
 import { useRouter } from 'next/navigation';
 
+// Helper function to get today's date in DD-MM-YY format
+const getTodayDate = (): string => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = String(today.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+};
+
+// Helper function to get current time in 12-hour format with AM/PM
+const getCurrentTime = (): string => {
+  const now = new Date();
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 should be 12
+  return `${hours}:${minutes} ${period}`;
+};
+
 export const useBookingForm = () => {
   const [activeService, setActiveService] = useState<ServiceType>('OUTSTATION');
   const [activeTripType, setActiveTripType] = useState<TripType>('ONEWAY');
@@ -22,9 +42,9 @@ export const useBookingForm = () => {
     dropAddress: '',
     city: '',
     package: '',
-    date: '03-06-25',
-    time: '11:00 PM',
-    pickupTime: '11:00 PM',
+    date: getTodayDate(),
+    time: getCurrentTime(),
+    pickupTime: getCurrentTime(),
     returnDate: '',
     name: '',
     phoneNumber: ''

@@ -12,13 +12,33 @@ import { ThemedButton } from "@/components/UI/ThemedButton";
 import { TabGroup } from "@/components/UI/TabGroup";
 import { ContactInfo } from "@/components/ContactInfo";
 
+// Helper function to get today's date in DD-MM-YY format
+const getTodayDate = (): string => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = String(today.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+};
+
+// Helper function to get current time in 12-hour format with AM/PM
+const getCurrentTime = (): string => {
+  const now = new Date();
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 should be 12
+  return `${hours}:${minutes} ${period}`;
+};
+
 const UserAirport = () => {
   const [formData, setFormData] = useState({
     serviceType: "drop",
     airportCity: "",
     otherLocation: "",
-    date: "",
-    time: "",
+    date: getTodayDate(),
+    time: getCurrentTime(),
     name: "",
     phoneNumber: "",
   });

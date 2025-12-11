@@ -13,15 +13,35 @@ import { BsCarFront, BsArrowRepeat } from "react-icons/bs";
 import { outstationService } from "@/services/outstationService";
 import { ContactInfo } from "@/components/ContactInfo";
 
+// Helper function to get today's date in DD-MM-YY format
+const getTodayDate = (): string => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = String(today.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+};
+
+// Helper function to get current time in 12-hour format with AM/PM
+const getCurrentTime = (): string => {
+  const now = new Date();
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 should be 12
+  return `${hours}:${minutes} ${period}`;
+};
+
 const UserOutstationRide = () => {
   const [formData, setFormData] = useState({
     city1: "",
     city2: "",
     tripType: "one-way",
-    date: "2025-06-03",
-    time: "23:00",
+    date: getTodayDate(),
+    time: getCurrentTime(),
     returnDate: "",
-    returnTime: "23:00",
+    returnTime: getCurrentTime(),
     name: "",
     phoneNumber: "",
   });

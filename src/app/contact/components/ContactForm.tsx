@@ -18,9 +18,11 @@ export const ContactForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    // Only allow numbers for mobile field
+    const processedValue = name === 'mobile' ? value.replace(/\D/g, '') : value;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: processedValue,
     }));
   };
 

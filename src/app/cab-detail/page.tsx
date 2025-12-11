@@ -121,10 +121,12 @@ const BookingDetailsContent: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
+    // Only allow numbers for mobile field
+    const processedValue = name === 'mobile' ? value.replace(/\D/g, '') : value;
     setFormData((prev) => ({
       ...prev,
       [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : processedValue,
     }));
   };
 

@@ -496,7 +496,10 @@ const UserOutstationRide = () => {
               <ThemedInput
                 placeholder="Enter your phone number"
                 value={formData.phoneNumber}
-                onChange={(e) => handleChange("phoneNumber", e.target.value)}
+                onChange={(e) => {
+                  const numericValue = e.target.value.replace(/\D/g, '');
+                  handleChange("phoneNumber", numericValue);
+                }}
               />
             </div>
           </div>

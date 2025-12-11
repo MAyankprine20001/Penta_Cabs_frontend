@@ -168,7 +168,10 @@ export const AirportForm: React.FC<AirportFormProps> = ({
           <ThemedInput
             placeholder="Enter your phone number"
             value={bookingData.phoneNumber}
-            onChange={(e) => onInputChange("phoneNumber", e.target.value)}
+            onChange={(e) => {
+              const numericValue = e.target.value.replace(/\D/g, '');
+              onInputChange("phoneNumber", numericValue);
+            }}
             error={errors.phoneNumber}
           />
         </div>

@@ -73,7 +73,10 @@ export const QuickInquiryForm: React.FC<QuickInquiryFormProps> = ({
           type="tel"
           placeholder="Mobile"
           value={inquiryData.mobile}
-          onChange={(e) => onInputChange("mobile", e.target.value)}
+          onChange={(e) => {
+            const numericValue = e.target.value.replace(/\D/g, '');
+            onInputChange("mobile", numericValue);
+          }}
           error={errors.mobile}
         />
       </div>

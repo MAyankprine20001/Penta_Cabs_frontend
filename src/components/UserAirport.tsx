@@ -15,8 +15,8 @@ import { ContactInfo } from "@/components/ContactInfo";
 // Helper function to get today's date in DD-MM-YY format
 const getTodayDate = (): string => {
   const today = new Date();
-  const day = String(today.getDate()).padStart(2, '0');
-  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, "0");
+  const month = String(today.getMonth() + 1).padStart(2, "0");
   const year = String(today.getFullYear()).slice(-2);
   return `${day}-${month}-${year}`;
 };
@@ -25,8 +25,8 @@ const getTodayDate = (): string => {
 const getCurrentTime = (): string => {
   const now = new Date();
   let hours = now.getHours();
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const period = hours >= 12 ? 'PM' : 'AM';
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const period = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12; // 0 should be 12
   return `${hours}:${minutes} ${period}`;
@@ -72,8 +72,26 @@ const UserAirport = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+
+    // Validate required fields
+    if (!formData.name || formData.name.trim() === "") {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (!formData.phoneNumber || formData.phoneNumber.trim() === "") {
+      setError("Please enter your phone number.");
+      return;
+    }
+
+    // Validate phone number format (should be at least 10 digits)
+    if (formData.phoneNumber.length < 10) {
+      setError("Please enter a valid phone number (at least 10 digits).");
+      return;
+    }
+
+    setLoading(true);
     setCabOptions([]);
     try {
       // Check if "Other" is selected
@@ -97,9 +115,12 @@ const UserAirport = () => {
           });
           console.log("Other service inquiry email sent to admin successfully");
         } catch (emailErr) {
-          console.error("Failed to send other service inquiry email:", emailErr);
+          console.error(
+            "Failed to send other service inquiry email:",
+            emailErr
+          );
         }
-        
+
         // Show contact info page
         setShowContactInfo(true);
         setLoading(false);
@@ -269,10 +290,13 @@ const UserAirport = () => {
             <ThemedSelect
               value={formData.airportCity}
               onChange={(e) => handleChange("airportCity", e.target.value)}
-              options={[...airportsData.map((airport: any) => ({
-                value: airport.airportCity,
-                label: airport.airportCity,
-              })), { value: "Other", label: "Other" }]}
+              options={[
+                ...airportsData.map((airport: any) => ({
+                  value: airport.airportCity,
+                  label: airport.airportCity,
+                })),
+                { value: "Other", label: "Other" },
+              ]}
               placeholder="Select Airport City"
             />
           </div>
@@ -353,6 +377,7 @@ const UserAirport = () => {
                 placeholder="Enter your full name"
                 value={formData.name || ""}
                 onChange={(e) => handleChange("name", e.target.value)}
+                required
               />
             </div>
             <div className="space-y-2">
@@ -370,9 +395,10 @@ const UserAirport = () => {
                 placeholder="Enter your phone number"
                 value={formData.phoneNumber || ""}
                 onChange={(e) => {
-                  const numericValue = e.target.value.replace(/\D/g, '');
+                  const numericValue = e.target.value.replace(/\D/g, "");
                   handleChange("phoneNumber", numericValue);
                 }}
+                required
               />
             </div>
           </div>

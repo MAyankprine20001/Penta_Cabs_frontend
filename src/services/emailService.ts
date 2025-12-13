@@ -68,6 +68,7 @@ export interface BookingRequestData {
     name: string;
     whatsappNumber: string;
     vehicleNumber: string;
+    carName: string;
   };
   adminNotes?: string;
   createdAt?: string;
@@ -82,6 +83,7 @@ export interface DriverDetails {
   name: string;
   whatsappNumber: string;
   vehicleNumber: string;
+  carName: string;
 }
 
 // Airport Email Service

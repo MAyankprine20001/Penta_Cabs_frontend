@@ -42,6 +42,7 @@ interface BookingRequest {
     name: string;
     whatsappNumber: string;
     vehicleNumber: string;
+    carName: string;
   };
   adminNotes?: string;
   createdAt: string;
@@ -56,6 +57,7 @@ interface DriverDetails {
   name: string;
   whatsappNumber: string;
   vehicleNumber: string;
+  carName: string;
 }
 
 export default function UserDashboard() {
@@ -78,6 +80,7 @@ export default function UserDashboard() {
     name: "",
     whatsappNumber: "",
     vehicleNumber: "",
+    carName: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmittingDriverDetails, setIsSubmittingDriverDetails] =
@@ -195,6 +198,7 @@ export default function UserDashboard() {
       name: "",
       whatsappNumber: "",
       vehicleNumber: "",
+      carName: "",
     });
   };
 
@@ -241,10 +245,10 @@ Please contact the customer for pickup details.`;
     const message = `Your Driver Details:
 Driver Name: ${booking.driverDetails.name}
 Driver Contact: ${booking.driverDetails.whatsappNumber}
+Car Name: ${booking.driverDetails.carName || booking.cab.name || "N/A"}
 Vehicle Number: ${booking.driverDetails.vehicleNumber}
 Route: ${booking.route}
 Service: ${booking.serviceType}
-Cab Name: ${booking.cab.name || "N/A"}
 Pickup Location: ${booking.traveller.pickup || "N/A"}
 Drop Location: ${booking.traveller.drop || "N/A"}
 Date: ${booking.date || "N/A"}
@@ -814,14 +818,14 @@ Your driver will contact you soon for pickup.`;
       {/* Driver Details Modal */}
       {isDriverModalOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
         >
           <div
-            className="bg-gray-800 rounded-2xl p-4 sm:p-6 w-full max-w-md mx-auto"
+            className="bg-gray-900 rounded-2xl p-4 sm:p-6 w-full max-w-md mx-auto border-2 border-yellow-500 shadow-2xl max-h-[90vh] overflow-y-auto"
             style={{
-              border: `1px solid ${theme.colors.border.primary}`,
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+              boxShadow:
+                "0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(234, 179, 8, 0.3)",
             }}
           >
             <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -899,6 +903,25 @@ Your driver will contact you soon for pickup.`;
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="Enter vehicle number (e.g., GJ-01-AB-1234)"
                   maxLength={15}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1 sm:mb-2">
+                  Car Name
+                </label>
+                <input
+                  type="text"
+                  value={driverDetails.carName}
+                  onChange={(e) => {
+                    setDriverDetails((prev) => ({
+                      ...prev,
+                      carName: e.target.value,
+                    }));
+                  }}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm sm:text-base"
+                  placeholder="Enter car name (e.g., Swift Dzire, Innova)"
+                  maxLength={50}
                 />
               </div>
             </div>
@@ -1127,13 +1150,14 @@ Your driver will contact you soon for pickup.`;
         selectedBooking &&
         selectedBooking.driverDetails && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
           >
             <div
-              className="bg-gray-900 rounded-2xl w-full max-w-2xl mx-auto border border-gray-700 flex flex-col max-h-[90vh]"
+              className="bg-gray-900 rounded-2xl w-full max-w-2xl mx-auto border-2 border-yellow-500 flex flex-col max-h-[90vh] shadow-2xl"
               style={{
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+                boxShadow:
+                  "0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(234, 179, 8, 0.3)",
               }}
             >
               {/* Header */}
@@ -1180,32 +1204,50 @@ Your driver will contact you soon for pickup.`;
                 <div className="space-y-6">
                   {/* Driver Information */}
                   <div>
-                    <h4 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center">
-                      <span className="mr-2">🚗</span>
-                      Driver Information
+                    <h4 className="text-xl font-bold text-yellow-400 mb-5 flex items-center">
+                      <span className="mr-2 text-2xl">👨‍💼</span>
+                      Chauffeur Details
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-5 border-2 border-blue-500 shadow-lg">
+                        <label className="block text-sm font-semibold text-blue-100 mb-3 uppercase tracking-wide">
                           Driver Name
                         </label>
-                        <div className="text-white text-lg font-medium">
+                        <div className="text-white text-xl font-bold">
                           {selectedBooking.driverDetails.name}
                         </div>
                       </div>
-                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-5 border-2 border-blue-500 shadow-lg">
+                        <label className="block text-sm font-semibold text-blue-100 mb-3 uppercase tracking-wide">
                           Contact Number
                         </label>
-                        <div className="text-white text-lg font-medium">
+                        <div className="text-white text-xl font-bold">
                           {selectedBooking.driverDetails.whatsappNumber}
                         </div>
                       </div>
-                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                    </div>
+                  </div>
+
+                  {/* Vehicle Information */}
+                  <div className="mt-6">
+                    <h4 className="text-xl font-bold text-yellow-400 mb-5 flex items-center">
+                      <span className="mr-2 text-2xl">🚙</span>
+                      Vehicle Details
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl p-5 border-2 border-orange-500 shadow-lg">
+                        <label className="block text-sm font-semibold text-orange-100 mb-3 uppercase tracking-wide">
+                          Car Name
+                        </label>
+                        <div className="text-white text-xl font-bold">
+                          {selectedBooking.driverDetails.carName || "N/A"}
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl p-5 border-2 border-orange-500 shadow-lg">
+                        <label className="block text-sm font-semibold text-orange-100 mb-3 uppercase tracking-wide">
                           Vehicle Number
                         </label>
-                        <div className="text-white text-lg font-medium">
+                        <div className="text-white text-xl font-bold">
                           {selectedBooking.driverDetails.vehicleNumber}
                         </div>
                       </div>

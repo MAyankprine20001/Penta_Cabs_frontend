@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import { on } from "events";
 import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
+import { CiPhone } from "react-icons/ci";
 
 // Theme configuration (matching cab-lists)
 const theme = {
@@ -942,6 +943,11 @@ const CabBookingContent = () => {
                   </div>
                   <div className="flex items-center gap-2 justify-center">
                     <FaWhatsapp
+                      className="text-white"
+                      style={{ fontSize: "18px", flexShrink: 0 }}
+                    />
+                    <span className="text-white">/</span>
+                    <CiPhone
                       className="text-white"
                       style={{ fontSize: "18px", flexShrink: 0 }}
                     />

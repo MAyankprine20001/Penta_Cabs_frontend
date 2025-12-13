@@ -922,25 +922,6 @@ const CabBookingContent = () => {
                 </p>
                 <div className="flex flex-col gap-2 items-center">
                   <div className="flex items-center gap-2 justify-center">
-                    <FaWhatsapp
-                      className="text-white"
-                      style={{ fontSize: "18px", flexShrink: 0 }}
-                    />
-                    <p
-                      className="text-sm"
-                      style={{ color: theme.colors.text.primary }}
-                    >
-                      Phone:{" "}
-                      <a
-                        href="tel:7600839900"
-                        className="underline"
-                        style={{ color: theme.colors.accent.gold }}
-                      >
-                        +91 7600839900
-                      </a>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 justify-center">
                     <FaEnvelope
                       className="text-white"
                       style={{ fontSize: "18px", flexShrink: 0 }}
@@ -956,6 +937,25 @@ const CabBookingContent = () => {
                         style={{ color: theme.colors.accent.gold }}
                       >
                         info.pentacab@gmail.com
+                      </a>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 justify-center">
+                    <FaWhatsapp
+                      className="text-white"
+                      style={{ fontSize: "18px", flexShrink: 0 }}
+                    />
+                    <p
+                      className="text-sm"
+                      style={{ color: theme.colors.text.primary }}
+                    >
+                      Phone:{" "}
+                      <a
+                        href="tel:7600839900"
+                        className="underline"
+                        style={{ color: theme.colors.accent.gold }}
+                      >
+                        +91 7600839900
                       </a>
                     </p>
                   </div>

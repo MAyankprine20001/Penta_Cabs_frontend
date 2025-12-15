@@ -122,11 +122,13 @@ const BookingDetailsContent: React.FC = () => {
   ) => {
     const { name, value, type } = e.target;
     // Only allow numbers for mobile field
-    const processedValue = name === 'mobile' ? value.replace(/\D/g, '') : value;
+    const processedValue = name === "mobile" ? value.replace(/\D/g, "") : value;
     setFormData((prev) => ({
       ...prev,
       [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : processedValue,
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : processedValue,
     }));
   };
 
@@ -217,7 +219,7 @@ const BookingDetailsContent: React.FC = () => {
       tripText = `Local trip in ${city}`;
     }
 
-    const displayTime = time || pickupTime || "Not specified";
+    const displayTime = pickupTime || time || "Not specified";
     const tripTypeText = tripType === "ROUNDWAY" ? "ROUND TRIP" : "ONEWAY TRIP";
 
     return `${tripTypeText} | ${tripText} | On ${date} at ${displayTime}`;
@@ -228,7 +230,7 @@ const BookingDetailsContent: React.FC = () => {
     if (!bookingData) return "Loading...";
 
     const { date, time, pickupTime } = bookingData;
-    const displayTime = time || pickupTime || "Not specified";
+    const displayTime = pickupTime || time || "Not specified";
     return `${date} at ${displayTime}`;
   };
 

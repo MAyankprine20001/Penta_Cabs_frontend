@@ -164,7 +164,7 @@ const CabBookingContent = () => {
               ? `${bookingData.from} -> ${bookingData.to}`
               : bookingData.route || "",
           date: bookingData.date || "",
-          time: bookingData.time || bookingData.pickupTime || "",
+          time: bookingData.pickupTime || bookingData.time || "",
           selectedCab: bookingData.selectedCabName || bookingData.car || "",
         },
         handler: async (response: any) => {
@@ -786,7 +786,7 @@ const CabBookingContent = () => {
                   { label: "Date :", value: bookingData.date },
                   {
                     label: "Time :",
-                    value: bookingData.time || bookingData.pickupTime,
+                    value: bookingData.pickupTime || bookingData.time,
                   },
                   {
                     label: "Car :",
@@ -803,14 +803,14 @@ const CabBookingContent = () => {
                     value: bookingData.drop || bookingData.to,
                   },
                   { label: "Remark :", value: bookingData.remark },
-                  {
-                    label: "WhatsApp :",
-                    value: bookingData.whatsapp === "true" ? "Yes" : "No",
-                  },
-                  {
-                    label: "GST Details :",
-                    value: bookingData.gstDetails === "true" ? "Yes" : "No",
-                  },
+                  // {
+                  //   label: "WhatsApp :",
+                  //   value: bookingData.whatsapp === "true" ? "Yes" : "No",
+                  // },
+                  // {
+                  //   label: "GST Details :",
+                  //   value: bookingData.gstDetails === "true" ? "Yes" : "No",
+                  // },
                 ]
                   .filter((item) => item.value)
                   .map((item, index) => (

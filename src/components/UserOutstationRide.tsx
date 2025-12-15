@@ -198,7 +198,10 @@ const UserOutstationRide = () => {
         date: formData.date,
         pickupTime: formData.time,
         returnDate: formData.returnDate || "",
-        time: formData.returnTime || "",
+        // Only set time (return time) for round trips
+        ...(formData.tripType === "two-way" && formData.returnTime
+          ? { time: formData.returnTime }
+          : {}),
         name: formData.name,
         phoneNumber: formData.phoneNumber,
         // Add API response data

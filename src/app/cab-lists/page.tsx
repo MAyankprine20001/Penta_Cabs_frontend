@@ -715,6 +715,16 @@ const CabListsContent: React.FC = () => {
                           ℹ️ Toll tax is included in one-way drop.
                         </span>
                       </div>
+                      <div className="flex items-start gap-2">
+                        <span
+                          style={{
+                            color: theme.colors.text.muted,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          ℹ️ All cars have carriers for carrying luggage.
+                        </span>
+                      </div>
                     </div>
                   </div>
 

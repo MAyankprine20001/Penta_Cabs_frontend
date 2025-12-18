@@ -187,7 +187,7 @@ const CabListsContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  // Fetch distance from API if not available - only for OUTSTATION trips
+  // Fetch distance from API if not available and it's an OUTSTATION trip
   useEffect(() => {
     const fetchDistanceFromAPI = async () => {
       if (!bookingData || apiDistance !== null) return;
@@ -320,17 +320,20 @@ const CabListsContent: React.FC = () => {
   };
 
   // Calculate distance - use API distance if available, otherwise fallback to defaults
-  // Only used for OUTSTATION trips
   const calculateDistance = () => {
-    if (!bookingData || bookingData.serviceType !== "OUTSTATION") return "0";
+    if (!bookingData) return "0";
 
     // Use API distance if available (from admin data)
     if (apiDistance !== null) {
       return apiDistance.toString();
     }
 
-    // Fallback to default distance if API distance is not available
-    return "535";
+    // Fallback to default distances if API distance is not available
+    if (bookingData.serviceType === "AIRPORT") return "45";
+    if (bookingData.serviceType === "OUTSTATION") return "535";
+    if (bookingData.serviceType === "LOCAL") return "100";
+
+    return "0";
   };
 
   // Calculate dynamic pricing based on booking data and API response
@@ -715,16 +718,6 @@ const CabListsContent: React.FC = () => {
                           ℹ️ Toll tax is included in one-way drop.
                         </span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <span
-                          style={{
-                            color: theme.colors.text.muted,
-                            fontSize: "0.875rem",
-                          }}
-                        >
-                          ℹ️ All cars have carriers for carrying luggage.
-                        </span>
-                      </div>
                     </div>
                   </div>
 
@@ -858,9 +851,7 @@ const CabListsContent: React.FC = () => {
               className="text-center flex-1"
               style={{ color: theme.colors.text.secondary }}
             >
-              {formatTripDetails()}
-              {bookingData?.serviceType === "OUTSTATION" &&
-                ` | ${calculateDistance()} Km`}
+              {formatTripDetails()} | {calculateDistance()} Km
             </span>
 
             <button

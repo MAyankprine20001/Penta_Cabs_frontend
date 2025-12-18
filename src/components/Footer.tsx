@@ -73,6 +73,7 @@ const Footer: React.FC = () => {
     { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Terms and Conditions", href: "/terms-conditions" },
     { name: "Refund Policy", href: "/refund-policy" },
+    { name: "Shipping Policy", href: "/shipping-policy" },
   ];
 
   return (
@@ -365,7 +366,7 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Legal Links */}
-            {/* <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm">
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm">
               {legalLinks.map((link, index) => (
                 <React.Fragment key={link.name}>
                   <Link
@@ -394,7 +395,7 @@ const Footer: React.FC = () => {
                   )}
                 </React.Fragment>
               ))}
-            </div> */}
+            </div>
           </div>
         </div>
 

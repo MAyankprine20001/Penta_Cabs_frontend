@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import type { BookingFormData } from "@/types/booking";
+import { CountryCodeSelector } from "@/components/UI/CountryCodeSelector";
 
 // Theme configuration (matching HeroSection and cab-lists)
 const theme = {
@@ -90,6 +91,7 @@ const BookingDetailsContent: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
+    countryCode: "+91",
     email: "",
     pickup: "",
     drop: "",
@@ -129,6 +131,13 @@ const BookingDetailsContent: React.FC = () => {
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : processedValue,
+    }));
+  };
+
+  const handleCountryCodeChange = (dialCode: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      countryCode: dialCode,
     }));
   };
 
@@ -522,15 +531,11 @@ const BookingDetailsContent: React.FC = () => {
                     Mobile <span style={{ color: "#FF4444" }}>*</span>
                   </label>
                   <div className="flex gap-2">
-                    <select
-                      className="w-14 px-1 py-3 rounded-lg text-white focus:outline-none focus:ring-2 text-sm flex-shrink-0"
-                      style={{
-                        background: theme.colors.primary.black,
-                        border: `1px solid ${theme.colors.border.light}`,
-                      }}
-                    >
-                      <option value="+91">+91</option>
-                    </select>
+                    <CountryCodeSelector
+                      value={formData.countryCode}
+                      onChange={handleCountryCodeChange}
+                      theme={theme}
+                    />
                     <input
                       type="tel"
                       name="mobile"

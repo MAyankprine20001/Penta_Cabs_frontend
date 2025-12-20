@@ -143,7 +143,7 @@ const CabBookingContent = () => {
       }
 
       const rzp = new (window as any).Razorpay({
-        key: "rzp_test_RHDNpy93TPh9mv",
+        key: "rzp_live_Rtma2GgNGKqd23",
         order_id: order.id,
         amount: order.amount, // derived from order
         currency: order.currency, // derived from order

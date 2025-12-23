@@ -69,34 +69,20 @@ const theme = {
 const cabList: Vehicle[] = [
   {
     id: "1",
-    name: "Innova",
-    type: "innova",
-    capacity: 4,
-    features: ["AC"],
-    pricePerKm: 12,
-    basePrice: 7679,
-    images: ["/innova.jpg"],
-    available: true,
-    fuelType: "petrol",
-    airConditioned: true,
-    luggage: 2,
-  },
-  {
-    id: "2",
     name: "SEDAN",
     type: "sedan",
     capacity: 4,
     features: ["AC"],
     pricePerKm: 15,
     basePrice: 8442,
-    images: ["/sedan.jpg"],
+    images: ["/sedanCopy.png"],
     available: true,
     fuelType: "petrol",
     airConditioned: true,
     luggage: 3,
   },
   {
-    id: "3",
+    id: "2",
     name: "SUV",
     type: "suv",
     capacity: 6,
@@ -108,6 +94,20 @@ const cabList: Vehicle[] = [
     fuelType: "diesel",
     airConditioned: true,
     luggage: 4,
+  },
+  {
+    id: "3",
+    name: "Innova",
+    type: "innova",
+    capacity: 4,
+    features: ["AC"],
+    pricePerKm: 12,
+    basePrice: 7679,
+    images: ["/innova.jpg"],
+    available: true,
+    fuelType: "petrol",
+    airConditioned: true,
+    luggage: 2,
   },
   {
     id: "4",
@@ -187,49 +187,14 @@ const CabListsContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  // Fetch distance from API if not available and it's an OUTSTATION trip
-  useEffect(() => {
-    const fetchDistanceFromAPI = async () => {
-      if (!bookingData || apiDistance !== null) return;
-
-      // Only fetch for OUTSTATION trips
-      if (
-        bookingData.serviceType === "OUTSTATION" &&
-        bookingData.from &&
-        bookingData.to
-      ) {
-        try {
-          // Map tripType to API format
-          const tripType =
-            bookingData.tripType === "ROUNDWAY" ? "two-way" : "one-way";
-
-          const response = await api.post("/api/intercity/search", {
-            city1: bookingData.from,
-            city2: bookingData.to,
-            tripType: tripType,
-          });
-
-          if (response.data && response.data.distance) {
-            setApiDistance(response.data.distance);
-          }
-        } catch (error) {
-          console.error("Error fetching distance from API:", error);
-          // Keep using fallback distance calculation
-        }
-      }
-    };
-
-    fetchDistanceFromAPI();
-  }, [bookingData, apiDistance]);
-
   // Helper function to get default image for cab type
   const getDefaultImageForType = (cabType: string): string[] => {
     const imageMap: { [key: string]: string } = {
-      sedan: "/sedan.jpg",
-      suv: "/suv.jpg",
-      innova: "/innova.jpg",
-      innovacrystal: "/innovacrystal.jpg",
-      crysta: "/innovacrystal.jpg",
+      sedan: "/sedanCopy.png",
+      suv: "/suvcopy.png",
+      innova: "/innovacopy.png",
+      innovacrystal: "/innovacrystalcopy.png",
+      crysta: "/innovacrystalcopy.png",
     };
     return [imageMap[cabType] || "/sedan.jpg"];
   };
@@ -273,6 +238,42 @@ const CabListsContent: React.FC = () => {
 
   const dynamicCabList = getCabList();
 
+  // Debug: Log the complete cab list structure
+  useEffect(() => {
+    if (dynamicCabList.length > 0) {
+      console.log("=== Dynamic Cab List ===");
+      dynamicCabList.forEach((cab, index) => {
+        console.log(`Cab ${index}:`, {
+          id: cab.id,
+          name: cab.name,
+          type: cab.type,
+        });
+      });
+    }
+  }, [dynamicCabList]);
+
+  // Set sedan as default selection after cab list is loaded
+  useEffect(() => {
+    if (dynamicCabList.length > 0 && !selectedCab) {
+      // Find sedan cab by type first (most reliable), then by name, then by id
+      const sedanCab = dynamicCabList.find(
+        (cab) =>
+          cab.type === "sedan" ||
+          cab.name.toUpperCase() === "SEDAN" ||
+          cab.id === "2"
+      );
+
+      if (sedanCab) {
+        console.log("Setting default selection to SEDAN:", sedanCab);
+        setSelectedCab(sedanCab.id);
+      } else {
+        // If no sedan found, select the first cab
+        console.log("No SEDAN found, selecting first cab");
+        setSelectedCab(dynamicCabList[0].id);
+      }
+    }
+  }, [dynamicCabList, selectedCab]);
+
   // Debug: Log the cab list to see image paths
   console.log(
     "Dynamic Cab List:",
@@ -281,6 +282,41 @@ const CabListsContent: React.FC = () => {
       images: cab.images,
     }))
   );
+
+  // Fetch distance from API if not available and it's an OUTSTATION trip
+  useEffect(() => {
+    const fetchDistanceFromAPI = async () => {
+      if (!bookingData || apiDistance !== null) return;
+
+      // Only fetch for OUTSTATION trips
+      if (
+        bookingData.serviceType === "OUTSTATION" &&
+        bookingData.from &&
+        bookingData.to
+      ) {
+        try {
+          // Map tripType to API format
+          const tripType =
+            bookingData.tripType === "ROUNDWAY" ? "two-way" : "one-way";
+
+          const response = await api.post("/api/intercity/search", {
+            city1: bookingData.from,
+            city2: bookingData.to,
+            tripType: tripType,
+          });
+
+          if (response.data && response.data.distance) {
+            setApiDistance(response.data.distance);
+          }
+        } catch (error) {
+          console.error("Error fetching distance from API:", error);
+          // Keep using fallback distance calculation
+        }
+      }
+    };
+
+    fetchDistanceFromAPI();
+  }, [bookingData, apiDistance]);
 
   // Helper function to format trip details based on booking data
   const formatTripDetails = () => {
@@ -485,118 +521,217 @@ const CabListsContent: React.FC = () => {
 
         {/* Cab Selection Grid */}
         <div
-          className={`grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 ${
+          className={`mb-12 ${
             isVisible ? "animate-fade-in-up animate-delay-300" : "opacity-0"
           }`}
         >
-          {dynamicCabList.map((cab, index) => {
-            const dynamicPrice = calculatePrice(cab);
+          {/* Mobile: 4-column grid without scroll */}
+          <div className="grid grid-cols-4 gap-2 md:hidden">
+            {dynamicCabList.map((cab, index) => {
+              const dynamicPrice = calculatePrice(cab);
 
-            return (
-              <div
-                key={cab.id}
-                className={`relative rounded-xl p-6 cursor-pointer transition-all duration-500 hover:scale-105 group ${
-                  selectedCab === cab.id
-                    ? "ring-2 ring-opacity-80"
-                    : "hover:ring-1 hover:ring-opacity-50"
-                }`}
-                style={{
-                  background:
+              return (
+                <div
+                  key={cab.id}
+                  className={`relative rounded-lg p-2 cursor-pointer transition-all duration-500 hover:scale-105 group ${
                     selectedCab === cab.id
-                      ? `linear-gradient(135deg, ${theme.colors.primary.darkGray} 0%, ${theme.colors.primary.black} 100%)`
-                      : theme.gradients.cardGradient,
-                  border:
-                    selectedCab === cab.id
-                      ? `2px solid ${theme.colors.accent.gold}`
-                      : `1px solid ${theme.colors.border.light}`,
-                  boxShadow:
-                    selectedCab === cab.id
-                      ? `0 20px 60px ${theme.colors.shadow.gold}, 0 0 0 1px ${theme.colors.accent.gold}30`
-                      : `0 10px 30px ${theme.colors.shadow.elevated}`,
-                  animationDelay: `${index * 100}ms`,
-                }}
-                onClick={() => setSelectedCab(cab.id)}
-              >
-                {/* Glow effect for selected card */}
-                {selectedCab === cab.id && (
-                  <div
-                    className="absolute inset-0 blur-xl opacity-30 animate-pulse rounded-xl"
-                    style={{
-                      background: `radial-gradient(ellipse 80% 60% at 50% 50%, ${theme.colors.accent.gold}60 0%, transparent 70%)`,
-                      transform: "scale(1.2)",
-                      animationDuration: "3s",
-                    }}
-                  />
-                )}
-
-                <div className="relative z-10 text-center">
-                  {/* Car Image */}
-                  <div
-                    className="w-20 h-16 mx-auto mb-4 rounded-lg overflow-hidden group-hover:scale-110 transition-transform duration-300 relative"
-                    style={{
-                      background:
-                        selectedCab === cab.id
-                          ? theme.gradients.gold
-                          : `linear-gradient(135deg, ${theme.colors.border.light} 0%, rgba(255, 255, 255, 0.05) 100%)`,
-                      padding: "4px",
-                    }}
-                  >
-                    <img
-                      src={`${cab.images[0]}?v=${Date.now()}`}
-                      alt={cab.name}
-                      className="w-full h-full object-contain rounded"
+                      ? "ring-2 ring-opacity-80"
+                      : "hover:ring-1 hover:ring-opacity-50"
+                  }`}
+                  style={{
+                    background:
+                      selectedCab === cab.id
+                        ? `linear-gradient(135deg, ${theme.colors.primary.darkGray} 0%, ${theme.colors.primary.black} 100%)`
+                        : theme.gradients.cardGradient,
+                    border:
+                      selectedCab === cab.id
+                        ? `2px solid ${theme.colors.accent.gold}`
+                        : `1px solid ${theme.colors.border.light}`,
+                    boxShadow:
+                      selectedCab === cab.id
+                        ? `0 10px 30px ${theme.colors.shadow.gold}, 0 0 0 1px ${theme.colors.accent.gold}30`
+                        : `0 5px 15px ${theme.colors.shadow.elevated}`,
+                    animationDelay: `${index * 100}ms`,
+                  }}
+                  onClick={() => setSelectedCab(cab.id)}
+                >
+                  {/* Glow effect for selected card */}
+                  {selectedCab === cab.id && (
+                    <div
+                      className="absolute inset-0 blur-lg opacity-30 animate-pulse rounded-lg"
                       style={{
-                        filter:
-                          selectedCab === cab.id
-                            ? "brightness(1.1)"
-                            : "brightness(0.9)",
-                      }}
-                      onError={(e) => {
-                        console.error(
-                          `Failed to load image: ${cab.images[0]}`,
-                          e
-                        );
-                        e.currentTarget.style.display = "none";
-                      }}
-                      onLoad={() => {
-                        console.log(
-                          `Successfully loaded image: ${cab.images[0]}`
-                        );
+                        background: `radial-gradient(ellipse 80% 60% at 50% 50%, ${theme.colors.accent.gold}60 0%, transparent 70%)`,
+                        transform: "scale(1.2)",
+                        animationDuration: "3s",
                       }}
                     />
+                  )}
+
+                  <div className="relative z-10 text-center">
+                    {/* Car Image */}
+                    <div className="w-full h-10 mx-auto mb-1.5 rounded overflow-hidden group-hover:scale-110 transition-transform duration-300 relative">
+                      <img
+                        src={`${cab.images[0]}?v=${Date.now()}`}
+                        alt={cab.name}
+                        className="w-full h-full object-contain"
+                        style={{
+                          filter:
+                            selectedCab === cab.id
+                              ? "brightness(1.1)"
+                              : "brightness(0.9)",
+                        }}
+                        onError={(e) => {
+                          console.error(
+                            `Failed to load image: ${cab.images[0]}`,
+                            e
+                          );
+                          e.currentTarget.style.display = "none";
+                        }}
+                        onLoad={() => {
+                          console.log(
+                            `Successfully loaded image: ${cab.images[0]}`
+                          );
+                        }}
+                      />
+                    </div>
+
+                    {/* Cab Name */}
+                    <h3
+                      className="font-semibold mb-1"
+                      style={{
+                        color:
+                          selectedCab === cab.id
+                            ? theme.colors.accent.gold
+                            : theme.colors.text.primary,
+                        fontWeight: theme.typography.fontWeight.semibold,
+                        fontSize: "0.65rem",
+                      }}
+                    >
+                      {cab.name}
+                    </h3>
+
+                    {/* Price */}
+                    <p
+                      className="font-bold"
+                      style={{
+                        color:
+                          selectedCab === cab.id
+                            ? theme.colors.text.primary
+                            : theme.colors.text.secondary,
+                        fontWeight: theme.typography.fontWeight.bold,
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      ₹ {dynamicPrice}
+                    </p>
                   </div>
-
-                  {/* Cab Name */}
-                  <h3
-                    className="font-semibold text-lg mb-2"
-                    style={{
-                      color:
-                        selectedCab === cab.id
-                          ? theme.colors.accent.gold
-                          : theme.colors.text.primary,
-                      fontWeight: theme.typography.fontWeight.semibold,
-                    }}
-                  >
-                    {cab.name}
-                  </h3>
-
-                  {/* Price */}
-                  <p
-                    className="text-2xl font-bold"
-                    style={{
-                      color:
-                        selectedCab === cab.id
-                          ? theme.colors.text.primary
-                          : theme.colors.text.secondary,
-                      fontWeight: theme.typography.fontWeight.bold,
-                    }}
-                  >
-                    ₹ {dynamicPrice}
-                  </p>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {/* Desktop/Tablet: Grid layout */}
+          <div className="hidden md:grid md:grid-cols-4 gap-6">
+            {dynamicCabList.map((cab, index) => {
+              const dynamicPrice = calculatePrice(cab);
+
+              return (
+                <div
+                  key={cab.id}
+                  className={`relative rounded-xl p-6 cursor-pointer transition-all duration-500 hover:scale-105 group ${
+                    selectedCab === cab.id
+                      ? "ring-2 ring-opacity-80"
+                      : "hover:ring-1 hover:ring-opacity-50"
+                  }`}
+                  style={{
+                    background:
+                      selectedCab === cab.id
+                        ? `linear-gradient(135deg, ${theme.colors.primary.darkGray} 0%, ${theme.colors.primary.black} 100%)`
+                        : theme.gradients.cardGradient,
+                    border:
+                      selectedCab === cab.id
+                        ? `2px solid ${theme.colors.accent.gold}`
+                        : `1px solid ${theme.colors.border.light}`,
+                    boxShadow:
+                      selectedCab === cab.id
+                        ? `0 20px 60px ${theme.colors.shadow.gold}, 0 0 0 1px ${theme.colors.accent.gold}30`
+                        : `0 10px 30px ${theme.colors.shadow.elevated}`,
+                    animationDelay: `${index * 100}ms`,
+                  }}
+                  onClick={() => setSelectedCab(cab.id)}
+                >
+                  {/* Glow effect for selected card */}
+                  {selectedCab === cab.id && (
+                    <div
+                      className="absolute inset-0 blur-xl opacity-30 animate-pulse rounded-xl"
+                      style={{
+                        background: `radial-gradient(ellipse 80% 60% at 50% 50%, ${theme.colors.accent.gold}60 0%, transparent 70%)`,
+                        transform: "scale(1.2)",
+                        animationDuration: "3s",
+                      }}
+                    />
+                  )}
+
+                  <div className="relative z-10 text-center">
+                    {/* Car Image */}
+                    <div className="w-20 h-16 mx-auto mb-4 rounded-lg overflow-hidden group-hover:scale-110 transition-transform duration-300 relative">
+                      <img
+                        src={`${cab.images[0]}?v=${Date.now()}`}
+                        alt={cab.name}
+                        className="w-full h-full object-contain rounded"
+                        style={{
+                          filter:
+                            selectedCab === cab.id
+                              ? "brightness(1.1)"
+                              : "brightness(0.9)",
+                        }}
+                        onError={(e) => {
+                          console.error(
+                            `Failed to load image: ${cab.images[0]}`,
+                            e
+                          );
+                          e.currentTarget.style.display = "none";
+                        }}
+                        onLoad={() => {
+                          console.log(
+                            `Successfully loaded image: ${cab.images[0]}`
+                          );
+                        }}
+                      />
+                    </div>
+
+                    {/* Cab Name */}
+                    <h3
+                      className="font-semibold text-lg mb-2"
+                      style={{
+                        color:
+                          selectedCab === cab.id
+                            ? theme.colors.accent.gold
+                            : theme.colors.text.primary,
+                        fontWeight: theme.typography.fontWeight.semibold,
+                      }}
+                    >
+                      {cab.name}
+                    </h3>
+
+                    {/* Price */}
+                    <p
+                      className="text-2xl font-bold"
+                      style={{
+                        color:
+                          selectedCab === cab.id
+                            ? theme.colors.text.primary
+                            : theme.colors.text.secondary,
+                        fontWeight: theme.typography.fontWeight.bold,
+                      }}
+                    >
+                      ₹ {dynamicPrice}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Selected Cab Details */}

@@ -208,29 +208,71 @@ export default function UserDashboard() {
   };
 
   const handleShowDriverDetails = (booking: BookingRequest) => {
+    console.log("Showing driver details for booking:", booking);
     setSelectedBooking(booking);
     setIsDriverDetailsModalOpen(true);
   };
 
+  //   const sendUserDetailsToWhatsApp = (booking: BookingRequest) => {
+  //     if (!booking.driverDetails?.whatsappNumber) return;
+
+  //     const message = `User Details for Booking:
+  // Name: ${booking.traveller.name}
+  // Email: ${booking.traveller.email}
+  // Phone: ${booking.traveller.mobile}
+  // Route: ${booking.route}
+  // Service: ${booking.serviceType}
+  // Cab Name: ${booking.cab.name || "N/A"}
+  // Pickup Location: ${booking.traveller.pickup || "N/A"}
+  // Drop Location: ${booking.traveller.drop || "N/A"}
+  // Date: ${booking.date || "N/A"}
+  // Time: ${booking.time || "N/A"}
+  // Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
+  // Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
+  // Distance: ${booking.estimatedDistance || "N/A"} km
+
+  // Please contact the customer for pickup details.`;
+
+  //     const whatsappUrl = `https://wa.me/${booking.driverDetails.whatsappNumber.replace(
+  //       /[^0-9]/g,
+  //       ""
+  //     )}?text=${encodeURIComponent(message)}`;
+  //     window.open(whatsappUrl, "_blank");
+  //   };
+
   const sendUserDetailsToWhatsApp = (booking: BookingRequest) => {
     if (!booking.driverDetails?.whatsappNumber) return;
 
-    const message = `User Details for Booking:
+    const message = `*🚗 User Details for Booking*
+
+📋 *Booking Information*
+Booking ID: ${booking.bookingId || "N/A"}
+Service Type: ${booking.serviceType}
+Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
+
+👤 *Customer Details*
 Name: ${booking.traveller.name}
 Email: ${booking.traveller.email}
 Phone: ${booking.traveller.mobile}
+
+📍 *Trip Details*
 Route: ${booking.route}
-Service: ${booking.serviceType}
-Cab Name: ${booking.cab.name || "N/A"}
-Pickup Location: ${booking.traveller.pickup || "N/A"}
-Drop Location: ${booking.traveller.drop || "N/A"}
-Date: ${booking.date || "N/A"}
-Time: ${booking.time || "N/A"}
-Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
-Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
+Pickup: ${booking.traveller.pickup || "N/A"}
+Drop: ${booking.traveller.drop || "N/A"}
 Distance: ${booking.estimatedDistance || "N/A"} km
 
-Please contact the customer for pickup details.`;
+🚙 *Vehicle Information*
+Cab Name: ${booking.cab.name || "N/A"}
+
+📅 *Schedule*
+Date: ${booking.date || "N/A"}
+Time: ${booking.time || "N/A"}
+
+💰 *Payment Details*
+Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
+
+---
+⚠️ *Please contact the customer for pickup details.*`;
 
     const whatsappUrl = `https://wa.me/${booking.driverDetails.whatsappNumber.replace(
       /[^0-9]/g,
@@ -239,23 +281,73 @@ Please contact the customer for pickup details.`;
     window.open(whatsappUrl, "_blank");
   };
 
+  //   const sendDriverDetailsToWhatsApp = (booking: BookingRequest) => {
+  //     if (!booking.driverDetails || !booking.traveller.mobile) return;
+
+  //     const message = `Your Driver Details:
+  // Driver Name: ${booking.driverDetails.name}
+  // Driver Contact: ${booking.driverDetails.whatsappNumber}
+  // Car Name: ${booking.driverDetails.carName || booking.cab.name || "N/A"}
+  // Vehicle Number: ${booking.driverDetails.vehicleNumber}
+  // Route: ${booking.route}
+  // Service: ${booking.serviceType}
+  // Pickup Location: ${booking.traveller.pickup || "N/A"}
+  // Drop Location: ${booking.traveller.drop || "N/A"}
+  // Date: ${booking.date || "N/A"}
+  // Time: ${booking.time || "N/A"}
+  // Distance: ${booking.estimatedDistance || "N/A"} km
+
+  // Your driver will contact you soon for pickup.`;
+
+  //     const whatsappUrl = `https://wa.me/${booking.traveller.mobile.replace(
+  //       /[^0-9]/g,
+  //       ""
+  //     )}?text=${encodeURIComponent(message)}`;
+  //     window.open(whatsappUrl, "_blank");
+  //   };
+
   const sendDriverDetailsToWhatsApp = (booking: BookingRequest) => {
     if (!booking.driverDetails || !booking.traveller.mobile) return;
 
-    const message = `Your Driver Details:
+    const message = `*🚗 Your Driver Details*
+
+📋 *Booking Information*
+Booking ID: ${booking.bookingId || "N/A"}
+Service Type: ${booking.serviceType}
+
+👨‍💼 *Driver Details*
 Driver Name: ${booking.driverDetails.name}
-Driver Contact: ${booking.driverDetails.whatsappNumber}
+Contact Number: ${booking.driverDetails.whatsappNumber}
+
+🚙 *Vehicle Information*
 Car Name: ${booking.driverDetails.carName || booking.cab.name || "N/A"}
 Vehicle Number: ${booking.driverDetails.vehicleNumber}
+
+📍 *Trip Details*
 Route: ${booking.route}
-Service: ${booking.serviceType}
-Pickup Location: ${booking.traveller.pickup || "N/A"}
-Drop Location: ${booking.traveller.drop || "N/A"}
-Date: ${booking.date || "N/A"}
-Time: ${booking.time || "N/A"}
+Pickup: ${booking.traveller.pickup || "N/A"}
+Drop: ${booking.traveller.drop || "N/A"}
 Distance: ${booking.estimatedDistance || "N/A"} km
 
-Your driver will contact you soon for pickup.`;
+📅 *Schedule*
+Date: ${booking.date || "N/A"}
+Time: ${booking.time || "N/A"}
+
+💰 *Payment Details*
+Total Amount: ₹${
+      booking.calculatedPayment?.totalFare?.toLocaleString() ||
+      booking.cab.price?.toLocaleString() ||
+      "0"
+    }
+Remaining: ₹${
+      booking.calculatedPayment?.remainingAmount?.toLocaleString() ||
+      booking.cab.price?.toLocaleString() ||
+      "0"
+    }
+Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
+
+---
+✅ *Your driver will contact you soon for pickup.*`;
 
     const whatsappUrl = `https://wa.me/${booking.traveller.mobile.replace(
       /[^0-9]/g,
@@ -263,7 +355,6 @@ Your driver will contact you soon for pickup.`;
     )}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
-
   const getPaymentMethodText = (paymentMethod: string) => {
     if (paymentMethod === "0") return "Cash on Delivery";
     if (paymentMethod === "20") return "20% Advance";
@@ -1058,6 +1149,15 @@ Your driver will contact you soon for pickup.`;
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
                       <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Booking ID
+                      </label>
+                      <div className="text-white text-lg font-medium">
+                        {selectedBooking.bookingId || "N/A"}
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
                         Service Type
                       </label>
                       <div className="text-white text-lg font-medium">
@@ -1110,7 +1210,9 @@ Your driver will contact you soon for pickup.`;
                         Total Amount
                       </label>
                       <div className="text-green-400 text-xl font-bold">
-                        ₹{selectedBooking.cab.price?.toLocaleString() || "0"}
+                        ₹
+                        {selectedBooking.calculatedPayment.totalFare?.toLocaleString() ||
+                          "0"}
                       </div>
                     </div>
                   </div>
@@ -1263,6 +1365,14 @@ Your driver will contact you soon for pickup.`;
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
                         <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Booking ID
+                        </label>
+                        <div className="text-white text-lg font-medium">
+                          {selectedBooking.bookingId}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
                           Customer Name
                         </label>
                         <div className="text-white text-lg font-medium">
@@ -1308,6 +1418,16 @@ Your driver will contact you soon for pickup.`;
                         <div className="text-white text-lg">
                           {selectedBooking.date || "N/A"}{" "}
                           {selectedBooking.time || "N/A"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Total Amount
+                        </label>
+                        <div className="text-green-400 text-xl font-bold">
+                          ₹
+                          {selectedBooking.calculatedPayment.totalFare?.toLocaleString() ||
+                            "0"}
                         </div>
                       </div>
                       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 md:col-span-2">

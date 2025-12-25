@@ -581,7 +581,7 @@ const BookingDetailsContent: React.FC = () => {
                     className="block text-sm font-medium mb-2"
                     style={{ color: theme.colors.text.secondary }}
                   >
-                    Pickup
+                    Pickup <span style={{ color: "#FF4444" }}>*</span>
                   </label>
                   <input
                     type="text"
@@ -589,6 +589,7 @@ const BookingDetailsContent: React.FC = () => {
                     placeholder="Pickup Address"
                     value={formData.pickup}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300"
                     style={{
                       background: theme.colors.primary.black,
@@ -603,7 +604,7 @@ const BookingDetailsContent: React.FC = () => {
                     className="block text-sm font-medium mb-2"
                     style={{ color: theme.colors.text.secondary }}
                   >
-                    Drop
+                    Drop <span style={{ color: "#FF4444" }}>*</span>
                   </label>
                   <input
                     type="text"
@@ -611,6 +612,7 @@ const BookingDetailsContent: React.FC = () => {
                     placeholder="Drop Address"
                     value={formData.drop}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300"
                     style={{
                       background: theme.colors.primary.black,

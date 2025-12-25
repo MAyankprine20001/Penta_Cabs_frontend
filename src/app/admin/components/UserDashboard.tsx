@@ -8,6 +8,7 @@ import {
   addDriverDetails,
   sendDeclineEmail,
 } from "@/services/emailService";
+import * as XLSX from "xlsx";
 
 interface BookingRequest {
   _id: string;
@@ -85,6 +86,7 @@ export default function UserDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmittingDriverDetails, setIsSubmittingDriverDetails] =
     useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -208,37 +210,129 @@ export default function UserDashboard() {
   };
 
   const handleShowDriverDetails = (booking: BookingRequest) => {
-    console.log("Showing driver details for booking:", booking);
     setSelectedBooking(booking);
     setIsDriverDetailsModalOpen(true);
   };
 
-  //   const sendUserDetailsToWhatsApp = (booking: BookingRequest) => {
-  //     if (!booking.driverDetails?.whatsappNumber) return;
+  // Excel Export Function - Exports ALL bookings
+  const handleExportToExcel = async () => {
+    try {
+      setIsExporting(true);
 
-  //     const message = `User Details for Booking:
-  // Name: ${booking.traveller.name}
-  // Email: ${booking.traveller.email}
-  // Phone: ${booking.traveller.mobile}
-  // Route: ${booking.route}
-  // Service: ${booking.serviceType}
-  // Cab Name: ${booking.cab.name || "N/A"}
-  // Pickup Location: ${booking.traveller.pickup || "N/A"}
-  // Drop Location: ${booking.traveller.drop || "N/A"}
-  // Date: ${booking.date || "N/A"}
-  // Time: ${booking.time || "N/A"}
-  // Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
-  // Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
-  // Distance: ${booking.estimatedDistance || "N/A"} km
+      // Fetch ALL bookings from the server (not just current page)
+      // We'll fetch a large limit to get all data
+      const allBookingsResponse = await getBookingRequests(1, 10000); // Fetch up to 10,000 records
+      const allBookings = allBookingsResponse.bookingRequests || [];
 
-  // Please contact the customer for pickup details.`;
+      // Apply current filters to the data
+      const filteredData = allBookings.filter((request) => {
+        const matchesSearch =
+          request.traveller.name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          request.traveller.email
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          request.traveller.mobile.includes(searchTerm) ||
+          request.route.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus =
+          statusFilter === "all" || request.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
 
-  //     const whatsappUrl = `https://wa.me/${booking.driverDetails.whatsappNumber.replace(
-  //       /[^0-9]/g,
-  //       ""
-  //     )}?text=${encodeURIComponent(message)}`;
-  //     window.open(whatsappUrl, "_blank");
-  //   };
+      // Prepare data for export
+      const exportData = filteredData.map((booking) => ({
+        "Booking ID": booking.bookingId || "N/A",
+        "Customer Name": booking.traveller.name || "N/A",
+        Email: booking.traveller.email || "N/A",
+        Phone: booking.traveller.mobile || "N/A",
+        "Service Type": booking.serviceType || "N/A",
+        "Cab Type": booking.cab.type || "N/A",
+        "Cab Name": booking.cab.name || "N/A",
+        Route: booking.route || "N/A",
+        Pickup: booking.traveller.pickup || "N/A",
+        Drop: booking.traveller.drop || "N/A",
+        Date: booking.date || "N/A",
+        Time: booking.time || "N/A",
+        "Distance (km)": booking.estimatedDistance || "N/A",
+        "Total Fare":
+          booking.calculatedPayment?.totalFare || booking.cab.price || 0,
+        "Paid Amount": booking.calculatedPayment
+          ? booking.calculatedPayment.totalFare -
+            booking.calculatedPayment.remainingAmount
+          : 0,
+        "Remaining Amount":
+          booking.calculatedPayment?.remainingAmount || booking.cab.price || 0,
+        "Payment Method": getPaymentMethodText(booking.paymentMethod),
+        Status: booking.status || "pending",
+        "Driver Name": booking.driverDetails?.name || "Not Assigned",
+        "Driver Phone": booking.driverDetails?.whatsappNumber || "N/A",
+        "Vehicle Number": booking.driverDetails?.vehicleNumber || "N/A",
+        "Car Name": booking.driverDetails?.carName || "N/A",
+        "Created At": booking.createdAt || "N/A",
+        "Pickup Address": booking.traveller.pickupAddress || "N/A",
+        "Drop Address": booking.traveller.dropAddress || "N/A",
+        Remark: booking.traveller.remark || "N/A",
+      }));
+
+      // Create worksheet
+      const ws = XLSX.utils.json_to_sheet(exportData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 15 }, // Booking ID
+        { wch: 20 }, // Customer Name
+        { wch: 25 }, // Email
+        { wch: 15 }, // Phone
+        { wch: 15 }, // Service Type
+        { wch: 15 }, // Cab Type
+        { wch: 15 }, // Cab Name
+        { wch: 30 }, // Route
+        { wch: 20 }, // Pickup
+        { wch: 20 }, // Drop
+        { wch: 12 }, // Date
+        { wch: 10 }, // Time
+        { wch: 12 }, // Distance
+        { wch: 12 }, // Total Fare
+        { wch: 12 }, // Paid Amount
+        { wch: 15 }, // Remaining Amount
+        { wch: 15 }, // Payment Method
+        { wch: 12 }, // Status
+        { wch: 20 }, // Driver Name
+        { wch: 15 }, // Driver Phone
+        { wch: 15 }, // Vehicle Number
+        { wch: 15 }, // Car Name
+        { wch: 20 }, // Created At
+        { wch: 30 }, // Pickup Address
+        { wch: 30 }, // Drop Address
+        { wch: 30 }, // Remark
+      ];
+      ws["!cols"] = columnWidths;
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Bookings");
+
+      // Generate filename with current date and total count
+      const date = new Date();
+      const filename = `Penta_Cab_Bookings_${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}_Total_${
+        exportData.length
+      }.xlsx`;
+
+      // Save file
+      XLSX.writeFile(wb, filename);
+
+      // Show success message
+      alert(`Successfully exported ${exportData.length} bookings to Excel!`);
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      alert("Failed to export bookings. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const sendUserDetailsToWhatsApp = (booking: BookingRequest) => {
     if (!booking.driverDetails?.whatsappNumber) return;
@@ -268,8 +362,20 @@ Cab Name: ${booking.cab.name || "N/A"}
 Date: ${booking.date || "N/A"}
 Time: ${booking.time || "N/A"}
 
+
 💰 *Payment Details*
-Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
+Total Amount: ₹${
+      booking.calculatedPayment?.totalFare?.toLocaleString() ||
+      booking.cab.price?.toLocaleString() ||
+      "0"
+    }
+Remaining: ₹${
+      booking.calculatedPayment?.remainingAmount?.toLocaleString() ||
+      booking.cab.price?.toLocaleString() ||
+      "0"
+    }
+Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
+
 
 ---
 ⚠️ *Please contact the customer for pickup details.*`;
@@ -280,31 +386,6 @@ Total Amount: ₹${booking.cab.price?.toLocaleString() || "0"}
     )}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
-
-  //   const sendDriverDetailsToWhatsApp = (booking: BookingRequest) => {
-  //     if (!booking.driverDetails || !booking.traveller.mobile) return;
-
-  //     const message = `Your Driver Details:
-  // Driver Name: ${booking.driverDetails.name}
-  // Driver Contact: ${booking.driverDetails.whatsappNumber}
-  // Car Name: ${booking.driverDetails.carName || booking.cab.name || "N/A"}
-  // Vehicle Number: ${booking.driverDetails.vehicleNumber}
-  // Route: ${booking.route}
-  // Service: ${booking.serviceType}
-  // Pickup Location: ${booking.traveller.pickup || "N/A"}
-  // Drop Location: ${booking.traveller.drop || "N/A"}
-  // Date: ${booking.date || "N/A"}
-  // Time: ${booking.time || "N/A"}
-  // Distance: ${booking.estimatedDistance || "N/A"} km
-
-  // Your driver will contact you soon for pickup.`;
-
-  //     const whatsappUrl = `https://wa.me/${booking.traveller.mobile.replace(
-  //       /[^0-9]/g,
-  //       ""
-  //     )}?text=${encodeURIComponent(message)}`;
-  //     window.open(whatsappUrl, "_blank");
-  //   };
 
   const sendDriverDetailsToWhatsApp = (booking: BookingRequest) => {
     if (!booking.driverDetails || !booking.traveller.mobile) return;
@@ -355,6 +436,7 @@ Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
     )}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
+
   const getPaymentMethodText = (paymentMethod: string) => {
     if (paymentMethod === "0") return "Cash on Delivery";
     if (paymentMethod === "20") return "20% Advance";
@@ -609,6 +691,40 @@ Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
         </div>
 
         <div className="flex items-center space-x-3 sm:space-x-4">
+          {/* Export Button */}
+          {/* <button
+            onClick={handleExportToExcel}
+            disabled={isExporting}
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors shadow-lg"
+            title="Export all bookings to Excel"
+          >
+            {isExporting ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span className="hidden sm:inline">Exporting...</span>
+                <span className="sm:hidden">...</span>
+              </>
+            ) : (
+              <>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <span className="hidden sm:inline">Export to Excel</span>
+                <span className="sm:hidden">Export</span>
+              </>
+            )}
+          </button> */}
+
           <div className="text-right">
             <div className="text-xl sm:text-2xl font-bold text-white">
               {bookingRequests.length}
@@ -906,6 +1022,7 @@ Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
         </div>
       )}
 
+      {/* Rest of your modals remain the same... */}
       {/* Driver Details Modal */}
       {isDriverModalOpen && (
         <div
@@ -1211,7 +1328,8 @@ Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
                       </label>
                       <div className="text-green-400 text-xl font-bold">
                         ₹
-                        {selectedBooking.calculatedPayment.totalFare?.toLocaleString() ||
+                        {selectedBooking.calculatedPayment?.totalFare?.toLocaleString() ||
+                          selectedBooking.cab.price?.toLocaleString() ||
                           "0"}
                       </div>
                     </div>
@@ -1426,7 +1544,8 @@ Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
                         </label>
                         <div className="text-green-400 text-xl font-bold">
                           ₹
-                          {selectedBooking.calculatedPayment.totalFare?.toLocaleString() ||
+                          {selectedBooking.calculatedPayment?.totalFare?.toLocaleString() ||
+                            selectedBooking.cab.price?.toLocaleString() ||
                             "0"}
                         </div>
                       </div>

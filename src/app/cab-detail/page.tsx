@@ -302,15 +302,15 @@ const BookingDetailsContent: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {/* Header */}
         <div
-          className={`text-center mb-8 ${
+          className={`text-center mb-6 sm:mb-8 ${
             isVisible ? "animate-fade-in-up" : "opacity-0"
           }`}
         >
           <h1
-            className="text-3xl lg:text-4xl font-bold mb-4"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 md:mb-4"
             style={{
               color: theme.colors.accent.gold,
               textShadow: `0 4px 20px ${theme.colors.shadow.gold}`,
@@ -321,7 +321,7 @@ const BookingDetailsContent: React.FC = () => {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {/* Left Column - Booking Details */}
           <div
             className={`${
@@ -330,7 +330,7 @@ const BookingDetailsContent: React.FC = () => {
           >
             {/* Booking Details Card */}
             <div
-              className="rounded-2xl p-6 mb-6"
+              className="rounded-xl md:rounded-2xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-5 md:mb-6"
               style={{
                 background: theme.gradients.cardGradient,
                 border: `2px solid ${theme.colors.accent.gold}`,
@@ -338,7 +338,7 @@ const BookingDetailsContent: React.FC = () => {
               }}
             >
               <h2
-                className="text-xl font-bold mb-6 text-center"
+                className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-5 md:mb-6 text-center"
                 style={{
                   color: theme.colors.accent.gold,
                   fontWeight: theme.typography.fontWeight.bold,
@@ -348,7 +348,7 @@ const BookingDetailsContent: React.FC = () => {
                 Booking Details
               </h2>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {[
                   {
                     label: "Route :",
@@ -370,16 +370,16 @@ const BookingDetailsContent: React.FC = () => {
                 ].map((item, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center"
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-2"
                   >
                     <span
-                      className="font-medium"
+                      className="font-medium text-sm sm:text-base"
                       style={{ color: theme.colors.text.secondary }}
                     >
                       {item.label}
                     </span>
                     <span
-                      className="font-semibold"
+                      className="font-semibold text-sm sm:text-base md:text-lg break-words text-right sm:text-left"
                       style={{ color: theme.colors.text.primary }}
                     >
                       {item.value}
@@ -388,18 +388,18 @@ const BookingDetailsContent: React.FC = () => {
                 ))}
 
                 <div
-                  className="border-t pt-4 mt-6"
+                  className="border-t pt-3 sm:pt-4 mt-4 sm:mt-6"
                   style={{ borderColor: theme.colors.border.light }}
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                     <span
-                      className="text-lg font-bold"
+                      className="text-base sm:text-lg font-bold"
                       style={{ color: theme.colors.text.secondary }}
                     >
                       Estimated Amount :
                     </span>
                     <span
-                      className="text-2xl font-bold"
+                      className="text-xl sm:text-2xl md:text-3xl font-bold"
                       style={{
                         color: theme.colors.accent.gold,
                         textShadow: `0 2px 10px ${theme.colors.shadow.gold}`,
@@ -415,14 +415,14 @@ const BookingDetailsContent: React.FC = () => {
             {/* Selected Cab Details */}
             {bookingData?.selectedCabImage && (
               <div
-                className="rounded-2xl p-6 mb-6"
+                className="rounded-xl md:rounded-2xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-5 md:mb-6"
                 style={{
                   background: theme.gradients.cardGradient,
                   border: `1px solid ${theme.colors.border.light}`,
                 }}
               >
                 <h3
-                  className="text-lg font-bold mb-4 text-center"
+                  className="text-base sm:text-lg md:text-xl font-bold mb-3 sm:mb-4 text-center"
                   style={{
                     color: theme.colors.accent.gold,
                     fontWeight: theme.typography.fontWeight.bold,
@@ -431,9 +431,9 @@ const BookingDetailsContent: React.FC = () => {
                   Selected Vehicle
                 </h3>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div
-                    className="w-20 h-16 rounded-lg overflow-hidden"
+                    className="w-16 h-12 sm:w-20 sm:h-16 md:w-24 md:h-20 rounded-lg overflow-hidden flex-shrink-0"
                     style={{
                       background: theme.gradients.gold,
                       padding: "2px",
@@ -446,9 +446,9 @@ const BookingDetailsContent: React.FC = () => {
                     />
                   </div>
 
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h4
-                      className="font-semibold text-lg mb-2"
+                      className="font-semibold text-sm sm:text-base md:text-lg mb-1 sm:mb-2 break-words"
                       style={{
                         color: theme.colors.text.primary,
                         fontWeight: theme.typography.fontWeight.semibold,
@@ -457,7 +457,7 @@ const BookingDetailsContent: React.FC = () => {
                       {bookingData.selectedCabName}
                     </h4>
 
-                    <div className="flex items-center gap-4 text-sm">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm">
                       <span style={{ color: theme.colors.text.secondary }}>
                         👤 {bookingData.selectedCabCapacity} Seats
                       </span>
@@ -481,7 +481,7 @@ const BookingDetailsContent: React.FC = () => {
             }`}
           >
             <div
-              className="rounded-2xl p-6"
+              className="rounded-xl md:rounded-2xl p-4 sm:p-5 md:p-6"
               style={{
                 background: theme.gradients.cardGradient,
                 border: `2px solid ${theme.colors.accent.gold}`,
@@ -489,7 +489,7 @@ const BookingDetailsContent: React.FC = () => {
               }}
             >
               <h2
-                className="text-xl font-bold mb-6 text-center"
+                className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-5 md:mb-6 text-center"
                 style={{
                   color: theme.colors.accent.gold,
                   fontWeight: theme.typography.fontWeight.bold,
@@ -498,11 +498,11 @@ const BookingDetailsContent: React.FC = () => {
                 Traveller Information
               </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
                 {/* Name Field */}
                 <div>
                   <label
-                    className="block text-sm font-medium mb-2"
+                    className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     Name <span style={{ color: "#FF4444" }}>*</span>
@@ -514,7 +514,7 @@ const BookingDetailsContent: React.FC = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base text-white focus:outline-none focus:ring-2 transition-all duration-300"
                     style={{
                       background: theme.colors.primary.black,
                       border: `1px solid ${theme.colors.border.light}`,
@@ -525,7 +525,7 @@ const BookingDetailsContent: React.FC = () => {
                 {/* Mobile Field */}
                 <div>
                   <label
-                    className="block text-sm font-medium mb-2"
+                    className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     Mobile <span style={{ color: "#FF4444" }}>*</span>
@@ -543,7 +543,7 @@ const BookingDetailsContent: React.FC = () => {
                       value={formData.mobile}
                       onChange={handleInputChange}
                       required
-                      className="flex-1 min-w-0 px-3 py-3 rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300"
+                      className="flex-1 min-w-0 px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base text-white focus:outline-none focus:ring-2 transition-all duration-300"
                       style={{
                         background: theme.colors.primary.black,
                         border: `1px solid ${theme.colors.border.light}`,
@@ -555,7 +555,7 @@ const BookingDetailsContent: React.FC = () => {
                 {/* Email Field */}
                 <div>
                   <label
-                    className="block text-sm font-medium mb-2"
+                    className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     Email <span style={{ color: "#FF4444" }}>*</span>
@@ -567,7 +567,7 @@ const BookingDetailsContent: React.FC = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base text-white focus:outline-none focus:ring-2 transition-all duration-300"
                     style={{
                       background: theme.colors.primary.black,
                       border: `1px solid ${theme.colors.border.light}`,
@@ -578,7 +578,7 @@ const BookingDetailsContent: React.FC = () => {
                 {/* Pickup Field */}
                 <div>
                   <label
-                    className="block text-sm font-medium mb-2"
+                    className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     Pickup <span style={{ color: "#FF4444" }}>*</span>
@@ -590,7 +590,7 @@ const BookingDetailsContent: React.FC = () => {
                     value={formData.pickup}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base text-white focus:outline-none focus:ring-2 transition-all duration-300"
                     style={{
                       background: theme.colors.primary.black,
                       border: `1px solid ${theme.colors.border.light}`,
@@ -601,7 +601,7 @@ const BookingDetailsContent: React.FC = () => {
                 {/* Drop Field */}
                 <div>
                   <label
-                    className="block text-sm font-medium mb-2"
+                    className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     Drop <span style={{ color: "#FF4444" }}>*</span>
@@ -613,7 +613,7 @@ const BookingDetailsContent: React.FC = () => {
                     value={formData.drop}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base text-white focus:outline-none focus:ring-2 transition-all duration-300"
                     style={{
                       background: theme.colors.primary.black,
                       border: `1px solid ${theme.colors.border.light}`,
@@ -711,7 +711,7 @@ const BookingDetailsContent: React.FC = () => {
                 {/* Status Message */}
                 {submitStatus.type && (
                   <div
-                    className={`p-4 rounded-lg mb-4 text-center font-medium ${
+                    className={`p-3 sm:p-4 rounded-lg mb-3 sm:mb-4 text-center font-medium text-sm sm:text-base ${
                       submitStatus.type === "success"
                         ? "bg-green-900 text-green-100 border border-green-500"
                         : "bg-red-900 text-red-100 border border-red-500"
@@ -725,7 +725,7 @@ const BookingDetailsContent: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full font-bold py-4 rounded-xl text-lg transition-all duration-500 transform relative overflow-hidden group ${
+                  className={`w-full font-bold py-3 sm:py-4 rounded-lg sm:rounded-xl text-base sm:text-lg md:text-xl transition-all duration-500 transform relative overflow-hidden group ${
                     isSubmitting
                       ? "opacity-70 cursor-not-allowed"
                       : "hover:scale-105"
@@ -749,8 +749,8 @@ const BookingDetailsContent: React.FC = () => {
                   <span className="relative z-10">
                     {isSubmitting ? (
                       <div className="flex items-center justify-center gap-2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black"></div>
-                        SENDING...
+                        <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-black"></div>
+                        <span className="text-sm sm:text-base">SENDING...</span>
                       </div>
                     ) : (
                       "PROCEED"
@@ -765,7 +765,7 @@ const BookingDetailsContent: React.FC = () => {
         {/* Trip Details Summary */}
         {bookingData && (
           <div
-            className={`mt-8 rounded-xl p-6 ${
+            className={`mt-6 sm:mt-8 rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 ${
               isVisible ? "animate-fade-in-up animate-delay-900" : "opacity-0"
             }`}
             style={{
@@ -773,9 +773,9 @@ const BookingDetailsContent: React.FC = () => {
               border: `1px solid ${theme.colors.border.light}`,
             }}
           >
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 text-xs sm:text-sm">
               <span
-                className="px-4 py-2 rounded-full font-medium"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-center w-full md:w-auto"
                 style={{
                   backgroundColor: theme.colors.primary.black,
                   color: theme.colors.text.secondary,
@@ -788,7 +788,7 @@ const BookingDetailsContent: React.FC = () => {
               </span>
 
               <span
-                className="text-center flex-1"
+                className="text-center flex-1 px-2 text-xs sm:text-sm"
                 style={{ color: theme.colors.text.secondary }}
               >
                 {formatTripDetails()} | {bookingData.estimatedDistance || "0"}{" "}
@@ -796,7 +796,7 @@ const BookingDetailsContent: React.FC = () => {
               </span>
 
               <button
-                className="px-4 py-2 rounded-full font-medium hover:scale-105 transition-transform duration-300"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium hover:scale-105 transition-transform duration-300 text-xs sm:text-sm w-full md:w-auto"
                 style={{
                   background: theme.gradients.gold,
                   color: theme.colors.primary.black,
@@ -815,7 +815,7 @@ const BookingDetailsContent: React.FC = () => {
 
         {/* Safety Guidelines Section */}
         <div
-          className={`mt-12 rounded-2xl overflow-hidden ${
+          className={`mt-8 sm:mt-10 md:mt-12 rounded-xl md:rounded-2xl overflow-hidden ${
             isVisible ? "animate-fade-in-up animate-delay-1200" : "opacity-0"
           }`}
           style={{
@@ -824,21 +824,21 @@ const BookingDetailsContent: React.FC = () => {
           }}
         >
           <div
-            className="py-4 px-6"
+            className="py-3 sm:py-4 px-4 sm:px-5 md:px-6"
             style={{
               background: theme.gradients.gold,
               color: theme.colors.primary.black,
             }}
           >
             <h3
-              className="text-xl font-bold"
+              className="text-lg sm:text-xl md:text-2xl font-bold"
               style={{ fontWeight: theme.typography.fontWeight.bold }}
             >
               Safety Guidelines
             </h3>
           </div>
 
-          <div className="p-6 space-y-4" style={{ color: "#333" }}>
+          <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4" style={{ color: "#333" }}>
             {[
               "If you have Booking Confirmation, rest assured you will get cab. We ensure cab arrives on time at your pick-up destination.",
               "Makemyride provide you best taxi services with Experienced and professional Drivers everytime. Working from last 10+ Years. Our company has more than 1500+ Trusted Customers and 750+ Comfortable rides.",
@@ -848,9 +848,9 @@ const BookingDetailsContent: React.FC = () => {
               "Our Email Address info.pentacab@gmail.com",
               "Our Contact Number +91 7600839900",
             ].map((guideline, index) => (
-              <div key={index} className="flex items-start gap-3">
+              <div key={index} className="flex items-start gap-2 sm:gap-3">
                 <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mt-1 flex-shrink-0"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold mt-0.5 sm:mt-1 flex-shrink-0"
                   style={{
                     background: theme.gradients.gold,
                     color: theme.colors.primary.black,
@@ -858,7 +858,7 @@ const BookingDetailsContent: React.FC = () => {
                 >
                   ✓
                 </div>
-                <p className="text-sm leading-relaxed">{guideline}</p>
+                <p className="text-xs sm:text-sm md:text-base leading-relaxed">{guideline}</p>
               </div>
             ))}
           </div>

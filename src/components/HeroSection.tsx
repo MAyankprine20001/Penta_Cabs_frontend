@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -44,7 +43,8 @@ const theme = {
     heroGradient:
       "linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2a2a2a 100%)",
     gold: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
-    enhancedBackground: "linear-gradient(135deg, #000000 0%, #0a0a0a 25%, #1a1a1a 50%, #0a0a0a 75%, #000000 100%)",
+    enhancedBackground:
+      "linear-gradient(135deg, #000000 0%, #0a0a0a 25%, #1a1a1a 50%, #0a0a0a 75%, #000000 100%)",
   },
   typography: {
     fontFamily: {
@@ -59,10 +59,9 @@ const theme = {
 };
 
 const HeroSection: React.FC = () => {
-
   return (
     <section
-      className="min-h-[400px] lg:min-h-[500px] flex items-center justify-center overflow-hidden w-full"
+      className="min-h-[150px] sm:min-h-[180px] lg:min-h-[200px] flex items-center justify-center overflow-hidden w-full py-8"
       style={{
         background: theme.gradients.enhancedBackground,
       }}
@@ -71,35 +70,36 @@ const HeroSection: React.FC = () => {
         <div className="flex flex-col lg:flex-row h-full">
           {/* Left Content - Text Section */}
           <div
-            className={`text-center lg:text-left space-y-6 flex items-center justify-center lg:justify-center px-4 sm:px-6 lg:px-8 w-full lg:w-1/2`}
+            className={`text-center lg:text-left space-y-6 flex items-center justify-center lg:justify-center px-4 sm:px-6 lg:px-8 w-full`}
           >
             {/* Welcome Text */}
-            <div className="space-y-3">
-              <h1
-                className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-none"
+            <h1
+              className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight leading-none flex flex-wrap items-center justify-center gap-2"
+              style={{
+                fontFamily: theme.typography.fontFamily.sans.join(", "),
+              }}
+            >
+              <span
                 style={{
                   color: theme.colors.text.primary,
-                  fontFamily: theme.typography.fontFamily.sans.join(", "),
                   textShadow: `0 4px 20px ${theme.colors.shadow.primary}`,
                 }}
               >
                 Welcome to
-              </h1>
-              <h1
-                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-none"
+              </span>
+              <span
                 style={{
                   color: theme.colors.accent.gold,
-                  fontFamily: theme.typography.fontFamily.sans.join(", "),
                   textShadow: `0 4px 20px ${theme.colors.shadow.gold}`,
                 }}
               >
                 Penta Cab
-              </h1>
-            </div>
+              </span>
+            </h1>
           </div>
 
           {/* Right Content - Image Section */}
-          <div className={`w-full lg:w-1/2 h-full flex items-center justify-center`}>
+          {/* <div className={`w-full lg:w-1/2 h-full flex items-center justify-center`}>
             <div className="w-full h-full flex items-center justify-center">
               <img
                 src="/cab_image.png"
@@ -114,7 +114,7 @@ const HeroSection: React.FC = () => {
                 }}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

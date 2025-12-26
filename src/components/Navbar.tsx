@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import { navigationItems } from "@/config/navigation";
+import { navigationItems, contactInfo } from "@/config/navigation";
 import { useScrollProgress, useNavbarState } from "@/hooks/useNavbar";
 import Logo from "./navbar/Logo";
 import NavigationMenu from "./navbar/NavigationMenu";
@@ -63,6 +63,27 @@ const Navbar: React.FC = () => {
               <div className="text-white">
                 <Logo />
               </div>
+            </div>
+
+            {/* Mobile/Tablet Phone Number - Center of Navbar */}
+            <div className="lg:hidden flex-1 flex items-center justify-center">
+              <a
+                href={`tel:${contactInfo.phone}`}
+                className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/40 hover:from-yellow-500/30 hover:to-yellow-600/30 hover:border-yellow-500/60 transition-all duration-300 transform hover:scale-105"
+                aria-label={`Call ${contactInfo.phoneFormatted}`}
+              >
+                <svg
+                  className="w-5 h-5 text-yellow-500 group-hover:text-yellow-400 transition-colors"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+                <span className="text-yellow-500 font-bold text-sm sm:text-base group-hover:text-yellow-400 transition-colors">
+                  {contactInfo.phoneFormatted}
+                </span>
+              </a>
             </div>
 
             {/* Desktop Navigation */}

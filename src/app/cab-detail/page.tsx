@@ -322,9 +322,9 @@ const BookingDetailsContent: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-          {/* Left Column - Booking Details */}
+          {/* Left Column - Booking Details (order-2 on mobile, order-1 on desktop) */}
           <div
-            className={`${
+            className={`order-2 lg:order-1 ${
               isVisible ? "animate-fade-in-up animate-delay-300" : "opacity-0"
             }`}
           >
@@ -474,9 +474,9 @@ const BookingDetailsContent: React.FC = () => {
             )}
           </div>
 
-          {/* Right Column - Traveller Information */}
+          {/* Right Column - Traveller Information (order-1 on mobile, order-2 on desktop) */}
           <div
-            className={`${
+            className={`order-1 lg:order-2 ${
               isVisible ? "animate-fade-in-up animate-delay-600" : "opacity-0"
             }`}
           >

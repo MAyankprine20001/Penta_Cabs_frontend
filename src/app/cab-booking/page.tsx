@@ -676,15 +676,23 @@ const CabBookingContent = () => {
                 >
                   I Agree all{" "}
                   <span
-                    className="underline cursor-pointer"
+                    className="underline cursor-pointer hover:opacity-80 transition-opacity"
                     style={{ color: theme.colors.accent.gold }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/terms-conditions");
+                    }}
                   >
                     Terms & Conditions
                   </span>{" "}
                   and{" "}
                   <span
-                    className="underline cursor-pointer"
+                    className="underline cursor-pointer hover:opacity-80 transition-opacity"
                     style={{ color: theme.colors.accent.gold }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/refund-policy");
+                    }}
                   >
                     Refund Policy
                   </span>

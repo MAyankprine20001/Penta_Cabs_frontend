@@ -43,7 +43,7 @@ export const QuickInquiryForm: React.FC<QuickInquiryFormProps> = ({
         Quick Inquiry for Booking
       </h3>
       <a
-        href="tel:7600839900"
+        href="tel:+917600839900"
         className="font-bold text-lg transition-colors"
         style={{
           color: theme.colors.accent.gold,

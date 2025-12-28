@@ -109,8 +109,10 @@ const WhatsAppChat: React.FC<WhatsAppChatProps> = ({
     const messageToSend = selectedMessage || customMessage;
     if (!messageToSend.trim()) return;
 
+    // Remove any existing country code and add 91 (WhatsApp URLs don't use +)
+    const cleanNumber = whatsappNumber.replace(/^\+?91/, '').replace(/[^0-9]/g, '');
     const encodedMessage = encodeURIComponent(messageToSend);
-    const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    const whatsappLink = `https://wa.me/91${cleanNumber}?text=${encodedMessage}`;
     window.open(whatsappLink, "_blank");
 
     if (onClose) {

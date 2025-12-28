@@ -25,7 +25,7 @@ const PhoneButton: React.FC<PhoneButtonProps> = ({
     return (
       <div className={`pt-6 border-t border-penta-gold/20 ${className}`}>
         <a
-          href={`tel:${contactInfo.phone}`}
+          href={`tel:+91${contactInfo.phone}`}
           className="group relative overflow-hidden flex items-center justify-center space-x-3 bg-gradient-gold text-penta-black px-6 py-4 rounded-xl font-bold w-full hover:shadow-gold-lg transition-all duration-300"
           onClick={handlePress}
         >
@@ -60,7 +60,7 @@ const PhoneButton: React.FC<PhoneButtonProps> = ({
         {/* Quick Actions */}
         <div className="mt-3 flex space-x-2">
           <a
-            href={`https://wa.me/${contactInfo.whatsapp}`}
+            href={`https://wa.me/91${contactInfo.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300"
@@ -83,7 +83,7 @@ const PhoneButton: React.FC<PhoneButtonProps> = ({
   return (
     <div className={`hidden lg:flex items-center ${className}`}>
       <a
-        href={`tel:${contactInfo.phone}`}
+        href={`tel:+91${contactInfo.phone}`}
         className="group relative overflow-hidden bg-gradient-gold text-penta-black px-6 py-3 rounded-xl font-bold text-sm hover:shadow-gold-lg transition-all duration-300 transform hover:scale-105"
         onClick={handlePress}
         aria-label="Call Penta Cab now"

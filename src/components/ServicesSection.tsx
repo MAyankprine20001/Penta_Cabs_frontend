@@ -399,7 +399,7 @@ const ServicesSection: React.FC = () => {
               >
                 Call us at{" "}
                 <a
-                  href="tel:7600839900"
+                  href="tel:+917600839900"
                   className="font-semibold hover:underline transition-colors duration-300"
                   style={{ color: theme.colors.accent.gold }}
                   onMouseEnter={(e) => {

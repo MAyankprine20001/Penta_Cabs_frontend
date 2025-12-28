@@ -160,7 +160,7 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
         <div className="space-y-3">
           {/* Phone Number */}
           <a
-            href="tel:917600839900"
+            href="tel:+917600839900"
             className="flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border transition-all hover:scale-105 w-full"
             style={{
               backgroundColor: theme.colors.background.secondary,

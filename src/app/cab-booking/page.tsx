@@ -965,7 +965,7 @@ const CabBookingContent = () => {
                     >
                       Phone:{" "}
                       <a
-                        href="tel:7600839900"
+                        href="tel:+917600839900"
                         className="underline"
                         style={{ color: theme.colors.accent.gold }}
                       >

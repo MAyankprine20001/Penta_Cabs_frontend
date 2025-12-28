@@ -380,10 +380,15 @@ Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
 ---
 ⚠️ *Please contact the customer for pickup details.*`;
 
-    const whatsappUrl = `https://wa.me/${booking.driverDetails.whatsappNumber.replace(
+    const cleanNumber = booking.driverDetails.whatsappNumber.replace(
       /[^0-9]/g,
       ""
-    )}?text=${encodeURIComponent(message)}`;
+    );
+    // Add 91 prefix if not already present
+    const numberWithCountryCode = cleanNumber.startsWith("91")
+      ? cleanNumber
+      : `91${cleanNumber}`;
+    const whatsappUrl = `https://wa.me/${numberWithCountryCode}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
 
@@ -430,10 +435,15 @@ Payment Method: ${getPaymentMethodText(booking.paymentMethod)}
 ---
 ✅ *Your driver will contact you soon for pickup.*`;
 
-    const whatsappUrl = `https://wa.me/${booking.traveller.mobile.replace(
+    const cleanNumber = booking.traveller.mobile.replace(
       /[^0-9]/g,
       ""
-    )}?text=${encodeURIComponent(message)}`;
+    );
+    // Add 91 prefix if not already present
+    const numberWithCountryCode = cleanNumber.startsWith("91")
+      ? cleanNumber
+      : `91${cleanNumber}`;
+    const whatsappUrl = `https://wa.me/${numberWithCountryCode}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
 

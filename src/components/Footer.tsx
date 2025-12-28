@@ -155,7 +155,7 @@ const Footer: React.FC = () => {
             {/* Contact Information */}
             <div className="flex flex-col items-center lg:items-start space-y-3 text-sm">
               <a
-                href={`tel:${contactInfo.phone}`}
+                href={`tel:+91${contactInfo.phone}`}
                 className="flex items-center space-x-3 group transition-colors duration-300"
                 style={{
                   color: theme.colors.text.secondary,

@@ -49,7 +49,7 @@ export const ContactMethods: React.FC = () => {
                 available 24/7 to help you with bookings and inquiries.
               </p>
               <a
-                href="tel:7600839900"
+                href="tel:+917600839900"
                 className="inline-flex items-center space-x-2 font-semibold transition-colors duration-300"
                 style={{ color: theme.colors.accent.gold }}
                 onMouseEnter={(e) => {

@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
             {/* Mobile/Tablet Phone Number - Center of Navbar */}
             <div className="lg:hidden flex-1 flex items-center justify-center">
               <a
-                href={`tel:${contactInfo.phone}`}
+                href={`tel:+91${contactInfo.phone}`}
                 className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/40 hover:from-yellow-500/30 hover:to-yellow-600/30 hover:border-yellow-500/60 transition-all duration-300 transform hover:scale-105"
                 aria-label={`Call ${contactInfo.phoneFormatted}`}
               >

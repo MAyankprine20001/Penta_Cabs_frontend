@@ -22,7 +22,11 @@ const FloatingCallIcons: React.FC<FloatingCallIconsProps> = ({
   const handleCall = () => {
     try {
       setIsCalling(true);
-      const telLink = `tel:${phoneNumber}`;
+      // Remove any existing country code and add +91
+      const cleanNumber = phoneNumber
+        .replace(/^\+?91/, "")
+        .replace(/[^0-9]/g, "");
+      const telLink = `tel:+91${cleanNumber}`;
       window.location.href = telLink;
 
       setTimeout(() => {
@@ -64,6 +68,12 @@ const FloatingCallIcons: React.FC<FloatingCallIconsProps> = ({
     setIsExpanded(!isExpanded);
   };
 
+  // Helper function to format phone number with +91 for display
+  const formatPhoneNumber = (number: string) => {
+    const cleanNumber = number.replace(/^\+?91/, "").replace(/[^0-9]/g, "");
+    return `+91 ${cleanNumber}`;
+  };
+
   const buttonStyle = {
     background: theme.gradients.goldToAmber,
     boxShadow: `0 6px 25px ${theme.colors.shadow.gold}`,
@@ -93,7 +103,7 @@ const FloatingCallIcons: React.FC<FloatingCallIconsProps> = ({
           }`}
           style={isWhatsApp ? activeButtonStyle : buttonStyle}
           aria-label="WhatsApp us"
-          title={`WhatsApp ${whatsappNumber}`}
+          title={`WhatsApp ${formatPhoneNumber(whatsappNumber)}`}
         >
           <Image
             src="/images/contact-icon/whatsapp.png"
@@ -120,7 +130,7 @@ const FloatingCallIcons: React.FC<FloatingCallIconsProps> = ({
           }`}
           style={isCalling ? activeButtonStyle : buttonStyle}
           aria-label="Call us"
-          title={`Call ${phoneNumber}`}
+          title={`Call ${formatPhoneNumber(phoneNumber)}`}
         >
           <Image
             src="/images/contact-icon/name.png"

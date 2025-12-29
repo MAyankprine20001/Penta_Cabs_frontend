@@ -166,7 +166,7 @@ const UserAirport = () => {
         tripType: "ONEWAY",
         airport: formData.airportCity,
         address: formData.otherLocation,
-        pickupDropType: formData.serviceType === "pickup" ? "PICKUP" : "DROP",
+        pickupDropType: formData.serviceType === "pick" ? "PICKUP" : "DROP",
         date: formData.date,
         pickupTime: formData.time,
         name: formData.name,
@@ -216,7 +216,7 @@ const UserAirport = () => {
       await axios.post(`${environment.baseUrl}/api/send-airport-email`, {
         email: traveller.email,
         route: `${
-          formData.serviceType === "pickup" ? "Pickup from" : "Drop to"
+          formData.serviceType === "pick" ? "Pickup from" : "Drop to"
         } ${formData.airportCity}`,
         cab: selectedCab,
         traveller,
@@ -265,9 +265,9 @@ const UserAirport = () => {
         <div className="px-2 sm:px-4">
           <TabGroup
             options={["PICKUP", "DROP"]}
-            activeOption={formData.serviceType === "pickup" ? "PICKUP" : "DROP"}
+            activeOption={formData.serviceType === "pick" ? "PICKUP" : "DROP"}
             onOptionChange={(option) =>
-              handleChange("serviceType", option.toLowerCase())
+              handleChange("serviceType", option === "PICKUP" ? "pick" : "drop")
             }
           />
         </div>

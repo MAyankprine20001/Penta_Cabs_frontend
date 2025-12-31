@@ -50,11 +50,25 @@ const RouteForm = forwardRef<
   const [contentHtml, setContentHtml] = useState("");
   const editorRef = useRef<HTMLDivElement>(null);
 
+  // Helper function to decode HTML entities like &amp; to &
+  // This fixes the issue where &amp; appears literally in the editor
+  // When content is saved, the browser will automatically encode & back to &amp;
+  const decodeHtmlEntities = (html: string): string => {
+    if (!html) return "";
+    // Replace &amp; with & so it displays correctly in the contentEditable editor
+    // The browser will handle re-encoding when we get innerHTML during save
+    return html.replace(/&amp;/g, "&");
+  };
+
   useImperativeHandle(ref, () => ({
     openModal: (route?: Route) => {
       if (route) {
         setRouteData(route);
-        setContentHtml(route.description || "");
+        // Decode HTML entities when loading route description
+        const decodedDescription = route.description 
+          ? decodeHtmlEntities(route.description) 
+          : "";
+        setContentHtml(decodedDescription);
       } else {
         setRouteData({
           routeName: "",
@@ -74,7 +88,9 @@ const RouteForm = forwardRef<
       // Ensure content is loaded after modal opens
       setTimeout(() => {
         if (route && editorRef.current && route.description) {
-          editorRef.current.innerHTML = route.description;
+          // Decode HTML entities before setting innerHTML
+          const decodedDescription = decodeHtmlEntities(route.description);
+          editorRef.current.innerHTML = decodedDescription;
         }
       }, 300);
     },
@@ -86,6 +102,7 @@ const RouteForm = forwardRef<
       // Add a small delay to ensure DOM is ready
       const timer = setTimeout(() => {
         if (editorRef.current && contentHtml !== editorRef.current.innerHTML) {
+          // ContentHtml is already decoded, so we can set it directly
           editorRef.current.innerHTML = contentHtml;
         }
       }, 100);
@@ -99,6 +116,7 @@ const RouteForm = forwardRef<
     if (isOpen && editorRef.current && contentHtml) {
       const timer = setTimeout(() => {
         if (editorRef.current && contentHtml !== editorRef.current.innerHTML) {
+          // ContentHtml is already decoded, so we can set it directly
           editorRef.current.innerHTML = contentHtml;
         }
       }, 200);
@@ -118,6 +136,7 @@ const RouteForm = forwardRef<
               editorRef.current &&
               contentHtml !== editorRef.current.innerHTML
             ) {
+              // ContentHtml is already decoded, so we can set it directly
               editorRef.current.innerHTML = contentHtml;
             }
           }, 50);

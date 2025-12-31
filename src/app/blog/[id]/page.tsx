@@ -59,6 +59,21 @@ export default function BlogPostPage({ params }: BlogPageProps) {
     }
   };
 
+  // Helper function to decode HTML entities like &nbsp; and &amp;
+  const decodeHtmlEntities = (html: string): string => {
+    if (!html) return "";
+    // Replace HTML entities with their actual characters
+    return html
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#160;/g, " ") // Decimal form of &nbsp;
+      .replace(/&#x20;/g, " ") // Hex form of space
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -158,7 +173,7 @@ export default function BlogPostPage({ params }: BlogPageProps) {
 
           {/* Excerpt */}
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-            {blog.excerpt}
+            {decodeHtmlEntities(blog.excerpt.replace(/<[^>]*>/g, ""))}
           </p>
 
           {/* Featured Image */}
@@ -244,7 +259,7 @@ export default function BlogPostPage({ params }: BlogPageProps) {
                 maxWidth: "100%",
               }}
               dangerouslySetInnerHTML={{
-                __html: blog.content
+                __html: decodeHtmlEntities(blog.content)
                   // Remove the first image from content since we're showing it as featured image
                   .replace(/<img[^>]+src="([^"]+)"[^>]*>/i, "")
                   // Enhance remaining images with better styling

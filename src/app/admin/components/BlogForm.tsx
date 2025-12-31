@@ -50,14 +50,27 @@ const BlogForm = forwardRef<
   const [linkOpenInNewTab, setLinkOpenInNewTab] = useState(true);
   const savedLinkRangeRef = useRef<Range | null>(null);
 
-  // Helper function to decode HTML entities like &amp; to &
-  // This fixes the issue where &amp; appears literally in the editor
-  // When content is saved, the browser will automatically encode & back to &amp;
+  // Table modal state
+  const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+  const [tableRows, setTableRows] = useState(3);
+  const [tableCols, setTableCols] = useState(3);
+
+  // Helper function to decode HTML entities like &amp; and &nbsp; 
+  // This fixes the issue where HTML entities appear literally in the editor
+  // When content is saved, the browser will automatically encode them back
   const decodeHtmlEntities = (html: string): string => {
     if (!html) return "";
-    // Replace &amp; with & so it displays correctly in the contentEditable editor
-    // The browser will handle re-encoding when we get innerHTML during save
-    return html.replace(/&amp;/g, "&");
+    // Replace HTML entities directly in the HTML string before setting innerHTML
+    // This prevents entities from appearing as literal text in contentEditable
+    return html
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#160;/g, " ") // Decimal form of &nbsp;
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&#x20;/g, " "); // Hex form of space
   };
 
   useImperativeHandle(ref, () => ({
@@ -185,6 +198,10 @@ const BlogForm = forwardRef<
         handleLinkInsert();
         // Don't update content or restore cursor here - handleLinkSubmit will do it
         return;
+      case "table":
+        handleTableInsert();
+        // Don't update content or restore cursor here - handleTableSubmit will do it
+        return;
       case "image":
         handleImageUpload();
         break;
@@ -200,8 +217,8 @@ const BlogForm = forwardRef<
 
     // Restore cursor position after formatting
     setTimeout(() => {
-      if (format !== "image" && format !== "link") {
-        // Don't restore for image or link as they handle their own cursor
+      if (format !== "image" && format !== "link" && format !== "table") {
+        // Don't restore for image, link, or table as they handle their own cursor
         restoreCursorPosition(savedPosition);
       }
     }, 10);
@@ -506,6 +523,115 @@ const BlogForm = forwardRef<
     setLinkText("");
     setLinkOpenInNewTab(true);
     savedLinkRangeRef.current = null;
+  };
+
+  const handleTableInsert = () => {
+    if (!editorRef.current) return;
+    setIsTableModalOpen(true);
+  };
+
+  const handleTableSubmit = () => {
+    if (!editorRef.current) return;
+
+    // Ensure editor is focused
+    editorRef.current.focus();
+
+    const selection = window.getSelection();
+    let range: Range | null = null;
+
+    if (selection && selection.rangeCount > 0) {
+      range = selection.getRangeAt(0);
+    } else {
+      range = document.createRange();
+      range.selectNodeContents(editorRef.current);
+      range.collapse(false);
+    }
+
+    if (!range) return;
+
+    // Create table element
+    const table = document.createElement("table");
+    table.style.width = "100%";
+    table.style.tableLayout = "fixed";
+    table.style.borderCollapse = "collapse";
+    table.style.margin = "10px 0";
+    table.style.border = "1px solid #4B5563";
+
+    // Calculate equal width for each column
+    const columnWidth = `${100 / tableCols}%`;
+
+    // Create header row
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    for (let i = 0; i < tableCols; i++) {
+      const th = document.createElement("th");
+      th.style.border = "1px solid #4B5563";
+      th.style.padding = "8px";
+      th.style.backgroundColor = "#374151";
+      th.style.textAlign = "left";
+      th.style.fontWeight = "bold";
+      th.style.width = columnWidth;
+      th.style.wordWrap = "break-word";
+      th.style.overflowWrap = "break-word";
+      th.style.verticalAlign = "top";
+      // Use empty space instead of &nbsp; to avoid entity encoding issues
+      th.textContent = " ";
+      headerRow.appendChild(th);
+    }
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create body rows
+    const tbody = document.createElement("tbody");
+    for (let i = 0; i < tableRows - 1; i++) {
+      const tr = document.createElement("tr");
+      for (let j = 0; j < tableCols; j++) {
+        const td = document.createElement("td");
+        td.style.border = "1px solid #4B5563";
+        td.style.padding = "8px";
+        td.style.width = columnWidth;
+        td.style.wordWrap = "break-word";
+        td.style.overflowWrap = "break-word";
+        td.style.verticalAlign = "top";
+        // Use empty space instead of &nbsp; to avoid entity encoding issues
+        td.textContent = " ";
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+
+    // Insert table at cursor position
+    range.deleteContents();
+    range.insertNode(table);
+
+    // Add a line break after table for better editing
+    const br = document.createElement("br");
+    range.setStartAfter(table);
+    range.insertNode(br);
+
+    // Move cursor after the break
+    const newRange = document.createRange();
+    newRange.setStartAfter(br);
+    newRange.collapse(true);
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    }
+
+    // Update content
+    updateContent();
+
+    // Close modal and reset
+    setIsTableModalOpen(false);
+    setTableRows(3);
+    setTableCols(3);
+  };
+
+  const handleTableCancel = () => {
+    setIsTableModalOpen(false);
+    setTableRows(3);
+    setTableCols(3);
   };
 
   const handleInputChange = (field: keyof BlogPost, value: string) => {
@@ -829,6 +955,30 @@ const BlogForm = forwardRef<
 
                   <div className="w-px h-6 bg-gray-500 mx-1"></div>
 
+                  {/* Table Button */}
+                  <button
+                    type="button"
+                    onClick={() => applyFormat("table")}
+                    className="w-8 h-8 flex items-center justify-center bg-gray-800 border border-gray-500 text-white rounded hover:bg-gray-600"
+                    title="Insert Table"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+
+                  <div className="w-px h-6 bg-gray-500 mx-1"></div>
+
                   {/* Image Upload Button */}
                   <button
                     type="button"
@@ -902,6 +1052,29 @@ const BlogForm = forwardRef<
                       color: #ffffff;
                       pointer-events: none;
                       opacity: 0.7;
+                    }
+                    #content-editor table {
+                      width: 100%;
+                      table-layout: fixed;
+                      border-collapse: collapse;
+                      margin: 10px 0;
+                      border: 1px solid #4B5563;
+                    }
+                    #content-editor table th,
+                    #content-editor table td {
+                      border: 1px solid #4B5563;
+                      padding: 8px;
+                      text-align: left;
+                      word-wrap: break-word;
+                      overflow-wrap: break-word;
+                      vertical-align: top;
+                    }
+                    #content-editor table th {
+                      background-color: #374151;
+                      font-weight: bold;
+                    }
+                    #content-editor table td {
+                      background-color: transparent;
                     }
                   `}</style>
                 </div>
@@ -1043,6 +1216,119 @@ const BlogForm = forwardRef<
                 className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
               >
                 Insert Link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Table Insert Modal */}
+      {isTableModalOpen && (
+        <div className="fixed inset-0 bg-[#00000080] z-[60] flex items-center justify-center">
+          <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-600 w-full max-w-md mx-4">
+            <div className="bg-gray-700 px-6 py-4 border-b border-gray-600 rounded-t-lg">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-yellow-400">
+                  Insert Table
+                </h3>
+                <button
+                  onClick={handleTableCancel}
+                  className="text-gray-400 hover:text-gray-200 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Rows Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Number of Rows
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="20"
+                  value={tableRows}
+                  onChange={(e) => setTableRows(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
+                  className="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Columns Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Number of Columns
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={tableCols}
+                  onChange={(e) => setTableCols(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                  className="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Preview */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Preview
+                </label>
+                <div className="bg-gray-900 border border-gray-600 rounded-lg p-4">
+                  <div className="inline-block">
+                    <table className="border-collapse border border-gray-600 text-white text-xs">
+                      <thead>
+                        <tr>
+                          {Array.from({ length: tableCols }, (_, i) => (
+                            <th
+                              key={i}
+                              className="border border-gray-600 px-2 py-1 bg-gray-700"
+                            >
+                              H{i + 1}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Array.from({ length: Math.min(tableRows - 1, 3) }, (_, i) => (
+                          <tr key={i}>
+                            {Array.from({ length: tableCols }, (_, j) => (
+                              <td
+                                key={j}
+                                className="border border-gray-600 px-2 py-1"
+                              >
+                                C{j + 1}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {tableRows > 4 && (
+                      <div className="text-gray-500 text-xs mt-1">
+                        ... and {tableRows - 4} more rows
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-700 px-6 py-4 border-t border-gray-600 rounded-b-lg flex items-center justify-end gap-3">
+              <button
+                onClick={handleTableCancel}
+                className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleTableSubmit}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+              >
+                Insert Table
               </button>
             </div>
           </div>

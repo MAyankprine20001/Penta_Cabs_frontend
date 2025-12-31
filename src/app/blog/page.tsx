@@ -44,6 +44,21 @@ export default function BlogPage() {
     }
   };
 
+  // Helper function to decode HTML entities like &nbsp; and &amp;
+  const decodeHtmlEntities = (html: string): string => {
+    if (!html) return "";
+    // Replace HTML entities with their actual characters
+    return html
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#160;/g, " ") // Decimal form of &nbsp;
+      .replace(/&#x20;/g, " ") // Hex form of space
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+  };
+
   const filteredBlogs = blogs.filter((blog) => {
     const matchesSearch =
       blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -241,7 +256,9 @@ export default function BlogPage() {
 
                       {/* Excerpt */}
                       <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                        {blog.excerpt}
+                        {decodeHtmlEntities(
+                          blog.excerpt.replace(/<[^>]*>/g, "")
+                        )}
                       </p>
 
                       {/* Meta Info */}

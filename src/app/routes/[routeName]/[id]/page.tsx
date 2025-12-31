@@ -63,6 +63,21 @@ export default function RouteDetailPage({ params }: RoutePageProps) {
     }
   };
 
+  // Helper function to decode HTML entities like &nbsp; and &amp;
+  const decodeHtmlEntities = (html: string): string => {
+    if (!html) return "";
+    // Replace HTML entities with their actual characters
+    return html
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#160;/g, " ") // Decimal form of &nbsp;
+      .replace(/&#x20;/g, " ") // Hex form of space
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -291,7 +306,7 @@ export default function RouteDetailPage({ params }: RoutePageProps) {
                 maxWidth: "100%",
               }}
               dangerouslySetInnerHTML={{
-                __html: route.description
+                __html: decodeHtmlEntities(route.description)
                   // Remove the first image from content since we're showing it as featured image
                   .replace(/<img[^>]+src="([^"]+)"[^>]*>/i, "")
                   // Enhance remaining images with better styling

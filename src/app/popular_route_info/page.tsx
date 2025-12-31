@@ -49,6 +49,21 @@ const PopularRouteInfo: React.FC = () => {
     }
   };
 
+  // Helper function to decode HTML entities like &nbsp; and &amp;
+  const decodeHtmlEntities = (html: string): string => {
+    if (!html) return "";
+    // Replace HTML entities with their actual characters
+    return html
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#160;/g, " ") // Decimal form of &nbsp;
+      .replace(/&#x20;/g, " ") // Hex form of space
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+  };
+
   const filteredRoutes = routes.filter((route) => {
     const matchesSearch =
       route.routeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -218,9 +233,9 @@ const PopularRouteInfo: React.FC = () => {
 
                         {/* Excerpt */}
                         <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                          {route.description
-                            .replace(/<[^>]*>/g, "")
-                            .substring(0, 90)}
+                          {decodeHtmlEntities(
+                            route.description.replace(/<[^>]*>/g, "")
+                          ).substring(0, 90)}
                           ...
                         </p>
                       </div>

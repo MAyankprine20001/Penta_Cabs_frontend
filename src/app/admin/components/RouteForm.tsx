@@ -50,6 +50,13 @@ const RouteForm = forwardRef<
   const [contentHtml, setContentHtml] = useState("");
   const editorRef = useRef<HTMLDivElement>(null);
 
+  // Link modal state
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkText, setLinkText] = useState("");
+  const [linkOpenInNewTab, setLinkOpenInNewTab] = useState(true);
+  const savedLinkRangeRef = useRef<Range | null>(null);
+
   // Helper function to decode HTML entities like &amp; to &
   // This fixes the issue where &amp; appears literally in the editor
   // When content is saved, the browser will automatically encode & back to &amp;
@@ -65,8 +72,8 @@ const RouteForm = forwardRef<
       if (route) {
         setRouteData(route);
         // Decode HTML entities when loading route description
-        const decodedDescription = route.description 
-          ? decodeHtmlEntities(route.description) 
+        const decodedDescription = route.description
+          ? decodeHtmlEntities(route.description)
           : "";
         setContentHtml(decodedDescription);
       } else {
@@ -188,11 +195,9 @@ const RouteForm = forwardRef<
         document.execCommand("insertOrderedList", false);
         break;
       case "link":
-        const url = prompt("Enter URL:");
-        if (url) {
-          document.execCommand("createLink", false, url);
-        }
-        break;
+        handleLinkInsert();
+        // Don't update content or restore cursor here - handleLinkSubmit will do it
+        return;
       case "image":
         handleImageUpload();
         break;
@@ -208,8 +213,8 @@ const RouteForm = forwardRef<
 
     // Restore cursor position after formatting
     setTimeout(() => {
-      if (format !== "image") {
-        // Don't restore for image as it handles its own cursor
+      if (format !== "image" && format !== "link") {
+        // Don't restore for image or link as they handle their own cursor
         restoreCursorPosition(savedPosition);
       }
     }, 10);
@@ -414,6 +419,106 @@ const RouteForm = forwardRef<
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleLinkInsert = () => {
+    if (!editorRef.current) return;
+
+    // Save the current selection range
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      savedLinkRangeRef.current = selection.getRangeAt(0).cloneRange();
+      const selectedText = selection.toString();
+      setLinkText(selectedText);
+    } else {
+      savedLinkRangeRef.current = null;
+      setLinkText("");
+    }
+
+    // Set default values
+    setLinkUrl("");
+    setLinkOpenInNewTab(true);
+    setIsLinkModalOpen(true);
+  };
+
+  const handleLinkSubmit = () => {
+    if (!linkUrl.trim()) {
+      alert("Please enter a URL");
+      return;
+    }
+
+    if (!editorRef.current) return;
+
+    // Ensure editor is focused
+    editorRef.current.focus();
+
+    // Try to use saved range, otherwise use current selection
+    let range: Range | null = null;
+    const selection = window.getSelection();
+
+    if (savedLinkRangeRef.current) {
+      // Use saved range
+      range = savedLinkRangeRef.current;
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    } else if (selection && selection.rangeCount > 0) {
+      // Use current selection
+      range = selection.getRangeAt(0);
+    } else {
+      // Create range at end of editor
+      range = document.createRange();
+      range.selectNodeContents(editorRef.current);
+      range.collapse(false); // Collapse to end
+    }
+
+    if (!range) return;
+
+    // Create link element
+    const link = document.createElement("a");
+    link.href = linkUrl.trim();
+    link.textContent = linkText.trim() || linkUrl.trim();
+    if (linkOpenInNewTab) {
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+    }
+
+    // If there's selected text or link text, replace selection with link
+    if (range.toString().trim() || linkText.trim()) {
+      range.deleteContents();
+      range.insertNode(link);
+    } else {
+      // Insert link at cursor position
+      range.insertNode(link);
+    }
+
+    // Move cursor after the link
+    const newRange = document.createRange();
+    newRange.setStartAfter(link);
+    newRange.collapse(true);
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    }
+
+    // Update content
+    updateContent();
+
+    // Close modal and reset state
+    setIsLinkModalOpen(false);
+    setLinkUrl("");
+    setLinkText("");
+    setLinkOpenInNewTab(true);
+    savedLinkRangeRef.current = null;
+  };
+
+  const handleLinkCancel = () => {
+    setIsLinkModalOpen(false);
+    setLinkUrl("");
+    setLinkText("");
+    setLinkOpenInNewTab(true);
+    savedLinkRangeRef.current = null;
   };
 
   const handleInputChange = (field: keyof Route, value: string) => {
@@ -971,6 +1076,107 @@ const RouteForm = forwardRef<
           </div>
         </div>
       </div>
+
+      {/* Link Insert Modal */}
+      {isLinkModalOpen && (
+        <div className="fixed inset-0  bg-[#00000080] image.pngbg-opacity-70 z-[60] flex items-center justify-center">
+          <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-600 w-full max-w-md mx-4">
+            <div className="bg-gray-700 px-6 py-4 border-b border-gray-600 rounded-t-lg">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-yellow-400">
+                  Insert Link
+                </h3>
+                <button
+                  onClick={handleLinkCancel}
+                  className="text-gray-400 hover:text-gray-200 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Link Text Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Link Text
+                </label>
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent placeholder-gray-500"
+                  placeholder="Text to display for the link"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      document.getElementById("link-url-input")?.focus();
+                    }
+                  }}
+                />
+                <p className="mt-1 text-xs text-gray-400">
+                  Leave empty to use the URL as link text
+                </p>
+              </div>
+
+              {/* URL Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  URL <span className="text-red-400">*</span>
+                </label>
+                <input
+                  id="link-url-input"
+                  type="url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent placeholder-gray-500"
+                  placeholder="https://example.com"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleLinkSubmit();
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Open in New Tab Checkbox */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="link-new-tab"
+                  checked={linkOpenInNewTab}
+                  onChange={(e) => setLinkOpenInNewTab(e.target.checked)}
+                  className="w-4 h-4 text-yellow-500 bg-gray-900 border-gray-600 rounded focus:ring-yellow-500 focus:ring-2"
+                />
+                <label
+                  htmlFor="link-new-tab"
+                  className="ml-2 text-sm text-gray-300 cursor-pointer"
+                >
+                  Open link in new tab
+                </label>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-700 px-6 py-4 border-t border-gray-600 rounded-b-lg flex items-center justify-end gap-3">
+              <button
+                onClick={handleLinkCancel}
+                className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLinkSubmit}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+              >
+                Insert Link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Fixed Footer */}
       <div className="bg-gray-800 border-t border-gray-700 p-4">

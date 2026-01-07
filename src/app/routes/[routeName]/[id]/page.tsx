@@ -184,7 +184,7 @@ export default function RouteDetailPage({ params }: RoutePageProps) {
     <div className="min-h-screen bg-black">
       {/* Navigation Header */}
       <div className="bg-gray-900 border-b border-gray-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             href="/popular_route_info"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
@@ -279,7 +279,7 @@ export default function RouteDetailPage({ params }: RoutePageProps) {
 
       {/* Route Content */}
       <article className="py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gray-900 rounded-xl p-8 md:p-12 overflow-hidden">
             <div
               className="prose prose-lg prose-invert max-w-none text-white overflow-hidden
